@@ -50,7 +50,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk';font-weight:600;letter-spacing:-.01em}
 .ms-opt{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:13px}
 .ms-opt:hover{background:#F4F7FA}.ms-opt input{accent-color:var(--blue)}
 .fclear{font-size:12px;color:var(--blue);cursor:pointer;margin-left:auto}.fclear:hover{text-decoration:underline}
-.wrap{max-width:1340px;margin:0 auto;padding:20px}
+.wrap{max-width:1760px;margin:0 auto;padding:20px 28px}
 .view{display:none}.view.active{display:block;animation:f .3s}@keyframes f{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin-bottom:20px}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 17px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
@@ -277,8 +277,7 @@ td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle}t
 <script>
 /* ====== CONFIG ====== */
 const SHEET_ID="1g6vGbVMAaLKnJI06F-xKVskKcE862EelVC_CKSH7U6c";
-const CSV=g=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${g}`;
-const SOURCES={master:CSV("1484820577"),design:CSV("392178120"),attendance:CSV("1387164875"),checkinout:CSV("854609223"),users:CSV("76549870")};
+const GIDS={master:"1484820577",design:"392178120",attendance:"1387164875",checkinout:"854609223",users:"76549870"};
 const ONSITE_KM=0.5, TODAY=new Date("2026-06-26");
 const SLA={first:{Alpha:{dev:1,design:2},Beta:{dev:2,design:5},Gamma:{dev:3,design:8},Omega:{dev:0,design:0}},
            revision:{Alpha:{dev:1,design:3},Beta:{dev:1,design:6},Gamma:{dev:2,design:9},Omega:{dev:0,design:0}}};
@@ -568,7 +567,7 @@ function drawMarkers(){if(!markerLayer)return;markerLayer.clearLayers();const pt
     m.bindPopup(`<div style="font-family:Inter;font-size:13px;min-width:200px"><b>${L.project}</b><br><span style="color:#5A6B7E">${L.id}</span><hr style="border:none;border-top:1px solid #E2E8F0;margin:7px 0">${L.city} · ${L.capacity}kWp · <b>${L.cat}</b><br>${dv}<br>Design: <b>${L.design.status}</b> (${L.design.type})</div>`);
     m.addTo(markerLayer);pts.push([L.lat,L.lng]);
     if(L.dev&&L.dev.effective&&L.dev.effective.lat&&L.dev.onsite===false){const dm=window.L.circleMarker([L.dev.effective.lat,L.dev.effective.lng],{radius:6,color:"#DC2626",weight:2,fillColor:"#FCE7E7",fillOpacity:.8});dm.bindPopup(`<b>DEV completed here</b><br>${L.dev.distKm}km from project`);dm.addTo(markerLayer);window.L.polyline([[L.lat,L.lng],[L.dev.effective.lat,L.dev.effective.lng]],{color:"#DC2626",weight:1.5,dashArray:"4 4"}).addTo(markerLayer);}});
-  if(pts.length)map.fitBounds(pts,{padding:[40,40]});renderLegend();}
+  if(pts.length)map.fitBounds(pts,{padding:[45,45],maxZoom:12});renderLegend();}
 function renderLegend(){const items=mapMode==="city"?Object.entries(CITY_COL):mapMode==="cat"?Object.entries(CAT_COL):Object.entries(DEV_COL);
   $("#mapLegend").innerHTML=items.map(([k,c])=>`<span class="it"><span class="sw" style="background:${c}"></span>${k}</span>`).join("")+`<span class="it" style="margin-left:auto;color:#DC2626"><span class="sw" style="background:#FCE7E7;border-color:#DC2626"></span>Off-site DEV</span>`;}
 
@@ -740,7 +739,21 @@ buildFilters();renderAll();
    spelling drift still resolves.
    ============================================================ */
 const DEV_TAT_START = "DEV Accepted timestamp"; // change to "Asssigned Time_Stamp" if you prefer
-function fetchCsv(url){return new Promise((res,rej)=>Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:r=>res(r.data||[]),error:rej}));}
+async function fetchCsv(gid){
+  const urls=[`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}`,
+              `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`];
+  let lastErr;
+  for(const u of urls){
+    try{
+      const res=await fetch(u,{credentials:"omit"});
+      if(!res.ok){lastErr=new Error("HTTP "+res.status);continue;}
+      const text=await res.text();
+      if(/^\s*</.test(text)){lastErr=new Error("got a login/HTML page — sheet not link-shared");continue;}
+      return Papa.parse(text,{header:true,skipEmptyLines:true}).data||[];
+    }catch(e){lastErr=e;}
+  }
+  throw lastErr||new Error("fetch failed");
+}
 function norm(s){return String(s==null?"":s).toLowerCase().replace(/[^a-z0-9]/g,"");}
 function pick(row,...keys){for(const k of keys){if(row[k]!=null&&String(row[k]).trim()!=="")return String(row[k]).trim();}
   const want=keys.map(norm);for(const rk in row){if(want.includes(norm(rk))&&String(row[rk]).trim()!=="")return String(row[rk]).trim();}return "";}
@@ -801,7 +814,7 @@ async function toggleConnect(){
   $("#updstamp").textContent="Connecting…";$("#connBtn").classList.remove("live");
   try{
     const [master,design,users,att]=await Promise.all([
-      fetchCsv(SOURCES.master),fetchCsv(SOURCES.design),fetchCsv(SOURCES.users).catch(()=>[]),fetchCsv(SOURCES.attendance).catch(()=>[])]);
+      fetchCsv(GIDS.master),fetchCsv(GIDS.design),fetchCsv(GIDS.users).catch(()=>[]),fetchCsv(GIDS.attendance).catch(()=>[])]);
     if(!master.length)throw new Error("Master sheet empty / unreachable");
     const dByLead={};design.forEach(r=>{const b=baseId(pick(r,"Lead ID"));if(b)(dByLead[b]=dByLead[b]||[]).push(r);});
     const mByLead={};master.forEach(r=>{const b=baseId(pick(r,"Lead ID"));if(b)(mByLead[b]=mByLead[b]||[]).push(r);});
