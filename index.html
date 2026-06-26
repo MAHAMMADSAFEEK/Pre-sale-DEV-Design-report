@@ -21,15 +21,19 @@
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5}
 .mono{font-family:'IBM Plex Mono',monospace}
 h1,h2,h3,h4{font-family:'Space Grotesk';font-weight:600;letter-spacing:-.01em}
-.topbar{background:var(--ink);color:#fff;padding:0 20px;display:flex;align-items:center;gap:18px;height:60px;position:sticky;top:0;z-index:1200}
-.logo{display:flex;align-items:center;gap:11px}
-.logo-mark{width:36px;height:36px}
-.logo-txt b{font-family:'Space Grotesk';font-weight:700;font-size:17px;display:block;line-height:1}
-.logo-txt span{font-size:10px;color:#9FB3C8;letter-spacing:.08em;text-transform:uppercase}
+.topbar{background:linear-gradient(100deg,#0E1B2A 0%,#163050 55%,#1E4179 100%);color:#fff;padding:0 22px;display:flex;align-items:center;gap:16px;min-height:66px;position:sticky;top:0;z-index:1200;box-shadow:0 2px 10px rgba(14,27,42,.18)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:42px;height:42px;background:#fff;border-radius:11px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.logo-txt b{font-family:'Space Grotesk';font-weight:700;font-size:19px;display:block;line-height:1.05}
+.logo-txt b .lt{font-weight:400;opacity:.85}
+.logo-txt span{font-size:10.5px;color:#A9C0DC;letter-spacing:.07em;text-transform:uppercase}
 .spacer{flex:1}
-.conn{display:flex;align-items:center;gap:8px;font-size:12px;color:#9FB3C8;background:rgba(255,255,255,.06);padding:7px 12px;border-radius:20px;cursor:pointer}
-.conn:hover{background:rgba(255,255,255,.12)}.conn .dot{width:8px;height:8px;border-radius:50%;background:var(--solar)}
-.conn.live .dot{background:#3DD68C;box-shadow:0 0 0 3px rgba(61,214,140,.25)}
+.userbox{text-align:right;font-size:12.5px;line-height:1.25;margin-right:4px}
+.userbox b{font-weight:500}.userbox span{font-size:10px;color:#A9C0DC;letter-spacing:.06em}
+.tbtn{font:inherit;font-size:12.5px;font-weight:500;color:#fff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:8px 13px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.tbtn:hover{background:rgba(255,255,255,.2)}
+.tbtn.live{background:#15633F;border-color:#1E8554}
+.conn{display:none}
 .tabs{background:var(--ink-2);padding:0 16px;display:flex;gap:1px;position:sticky;top:60px;z-index:1100;overflow-x:auto}
 .tab{color:#9FB3C8;padding:12px 14px 10px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap}
 .tab:hover{color:#D6E2EE}.tab.active{color:#fff;border-color:var(--solar)}
@@ -52,8 +56,10 @@ h1,h2,h3,h4{font-family:'Space Grotesk';font-weight:600;letter-spacing:-.01em}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 17px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .kpi:hover{box-shadow:0 4px 16px rgba(14,27,42,.08);transform:translateY(-1px)}
 .kpi.static{cursor:default}.kpi.static:hover{box-shadow:none;transform:none}
-.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--solar))}
-.kpi .lbl{font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:7px}
+.kpi::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--accent,var(--solar))}
+.kpi .lbl{font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:7px;margin-top:3px}
+.det{font-size:11.5px;font-weight:600;color:var(--blue);background:var(--blue-l);padding:3px 9px;border-radius:20px;cursor:pointer}
+.det:hover{background:#D3E4FA}
 .kpi .val{font-family:'Space Grotesk';font-size:28px;font-weight:700;line-height:1}
 .kpi .val small{font-size:13px;color:var(--txt-2);font-weight:500}
 .kpi .sub{font-size:11.5px;color:var(--txt-3);margin-top:5px}
@@ -84,6 +90,9 @@ td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle}t
 .bar-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;color:#fff;font-size:11px;font-weight:600;min-width:22px}
 .tat-cell{font-family:'IBM Plex Mono';font-size:12px}.over{color:var(--red);font-weight:600}.under{color:var(--green);font-weight:600}
 .muted{color:var(--txt-3)}.link{color:var(--blue);cursor:pointer;font-weight:500}.link:hover{text-decoration:underline}
+.minibtn{font:inherit;font-size:11.5px;border:1px solid var(--line-2);background:var(--surface);color:var(--blue);padding:3px 9px;border-radius:6px;cursor:pointer;margin-right:4px}
+.minibtn:hover{background:var(--blue-l);border-color:var(--blue)}
+.minibtn.j{color:var(--txt-2)}
 .dist{display:flex;align-items:center;gap:5px;font-size:12px}.km{font-family:'IBM Plex Mono';font-size:11px}
 /* funnel */
 .funnel{display:flex;flex-direction:column;gap:7px;max-width:680px;margin:0 auto}
@@ -153,10 +162,13 @@ td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle}t
 <div class="topbar">
   <div class="logo">
     <svg class="logo-mark" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="9" fill="#F5A623"/><g stroke="#F5A623" stroke-width="2.6" stroke-linecap="round"><line x1="24" y1="5" x2="24" y2="11"/><line x1="24" y1="37" x2="24" y2="43"/><line x1="5" y1="24" x2="11" y2="24"/><line x1="37" y1="24" x2="43" y2="24"/><line x1="10.5" y1="10.5" x2="14.8" y2="14.8"/><line x1="33.2" y1="33.2" x2="37.5" y2="37.5"/><line x1="37.5" y1="10.5" x2="33.2" y2="14.8"/><line x1="14.8" y1="33.2" x2="10.5" y2="37.5"/></g></svg>
-    <div class="logo-txt"><b>SolarOps</b><span>DEV &amp; Design Tracker</span></div>
+    <div class="logo-txt"><b>SolarOps <span class="lt">DEV &amp; Design</span></b><span id="updstamp">Society solar · sample data</span></div>
   </div>
   <div class="spacer"></div>
-  <div class="conn" id="connBtn" onclick="toggleConnect()"><span class="dot"></span><span id="connTxt">Sample data · click to connect</span></div>
+  <div class="userbox"><b>operations@solarsquare.in</b><br><span>ADMIN · FULL ACCESS</span></div>
+  <button class="tbtn" id="connBtn" onclick="toggleConnect()">↻ Refresh data</button>
+  <button class="tbtn" onclick="clearFilters()">⟲ Reset view</button>
+  <span class="conn" id="conn"><span id="connTxt"></span></span>
 </div>
 
 <div class="tabs" id="tabs">
@@ -184,12 +196,12 @@ td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle}t
     <div class="kpis" id="ovKpis"></div>
     <div class="panel" style="margin-bottom:15px"><div class="panel-h"><h3>Insights</h3><span class="hint">what's going well · what needs attention</span></div><div class="panel-b" id="insights"></div></div>
     <div class="grid g-2">
-      <div class="panel"><div class="panel-h"><h3>By month</h3><span class="hint">leads · DEV done · design done — click a bar</span></div><div class="panel-b" id="byMonth"></div></div>
-      <div class="panel"><div class="panel-h"><h3>By HOTO month</h3><span class="hint">click a bar</span></div><div class="panel-b" id="byHoto"></div></div>
+      <div class="panel"><div class="panel-h"><h3>By month</h3><span class="det" onclick="go('funnel')">Details ▸</span></div><div class="panel-b" id="byMonth"></div></div>
+      <div class="panel"><div class="panel-h"><h3>By HOTO month</h3><span class="det" onclick="go('cohort')">Details ▸</span></div><div class="panel-b" id="byHoto"></div></div>
     </div>
     <div class="grid g-2" style="margin-top:15px">
-      <div class="panel"><div class="panel-h"><h3>By city</h3><span class="hint">click a bar to drill in</span></div><div class="panel-b" id="byCity"></div></div>
-      <div class="panel"><div class="panel-h"><h3>By category</h3><span class="hint">Alpha · Beta · Gamma · Omega</span></div><div class="panel-b" id="byCat"></div></div>
+      <div class="panel"><div class="panel-h"><h3>By city</h3><span class="det" onclick="go('map')">Details ▸</span></div><div class="panel-b" id="byCity"></div></div>
+      <div class="panel"><div class="panel-h"><h3>By category</h3><span class="det" onclick="go('tat')">Details ▸</span></div><div class="panel-b" id="byCat"></div></div>
     </div>
     <div class="panel" style="margin-top:15px"><div class="panel-h"><h3>Monthly summary</h3><span class="hint">assigned · completed · on-time — click any number</span></div><div class="panel-b flush"><div class="tbl-wrap"><table id="monthlyTbl"></table></div></div></div>
     <div class="panel" style="margin-top:15px"><div class="panel-h"><h3>Designer summary</h3><span class="hint">total assigned · completed · on-time · avg net TAT — click any number</span></div><div class="panel-b flush"><div class="tbl-wrap"><table id="designerTbl"></table></div></div></div>
@@ -275,8 +287,8 @@ const catFromCap=k=>k<=30?"Alpha":k<=100?"Beta":k<200?"Gamma":"Omega";
 /* ====== SAMPLE DATA ====== */
 const SAMPLE={leads:[
  {id:"SSE_FOS46065PunFOS_47331",project:"Kothrud Residency",city:"Pune",addr:"Kothrud, Pune",lat:18.507,lng:73.807,capacity:24,devReq:"No",hoto:"2026-06-08",received:"2026-06-07",dev:null,design:{type:"Internal",designer:"Rohit Pawar",assigned:"2026-06-10",completed:"2026-06-11",revisions:0,status:"Completed",finalCap:24,instType:"Rooftop"}},
- {id:"SSE_FOS46065PunFOS_47332",project:"Hinjewadi Tech Park",city:"Pune",addr:"Hinjewadi Ph 2",lat:18.591,lng:73.738,capacity:78,devReq:"Yes",hoto:"2026-06-03",received:"2026-06-02",dev:{devName:"Amit Sane",permission:"2026-06-05",blocks:[{sched:"2026-06-06",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-07",connected:"Completed",ts:"2026-06-07 11:20",lat:18.592,lng:73.740}],finalStatus:"Completed"},design:{type:"External",designer:"Vendor — GreenCAD",assigned:"2026-06-08",completed:"2026-06-13",revisions:1,status:"Completed",finalCap:80,instType:"Rooftop"}},
- {id:"SSE_RBD45818DelRef_62219",project:"Karol Bagh Mall",city:"Delhi",addr:"Karol Bagh",lat:28.651,lng:77.190,capacity:165,devReq:"Yes",hoto:"2026-06-01",received:"2026-05-31",dev:{devName:"Sunil Yadav",permission:"2026-06-02",blocks:[{sched:"2026-06-03",connected:"Completed",ts:"2026-06-03 09:55",lat:28.659,lng:77.205}],finalStatus:"Completed"},design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-04",completed:"2026-06-15",revisions:2,status:"Completed",finalCap:170,instType:"Ground mount",holdStart:"2026-06-08",holdEnd:"2026-06-11",holdReason:"Awaiting client roof access"}},
+ {id:"SSE_FOS46065PunFOS_47332",project:"Hinjewadi Tech Park",city:"Pune",addr:"Hinjewadi Ph 2",lat:18.591,lng:73.738,capacity:78,devReq:"Yes",hoto:"2026-06-03",received:"2026-06-02",devHistory:[{rev:"Original DEV",devName:"Amit Sane",permission:"2026-06-05",completed:"2026-06-07",status:"Completed",reschedules:1,distKm:0.18,onsite:true,tat:2,note:"Initial site visit"},{rev:"Re-visit R1",devName:"Amit Sane",permission:"2026-06-14",completed:"2026-06-15",status:"Completed",reschedules:0,distKm:0.12,onsite:true,tat:1,note:"Revisit for shadow analysis"}],dev:{devName:"Amit Sane",permission:"2026-06-05",blocks:[{sched:"2026-06-06",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-07",connected:"Completed",ts:"2026-06-07 11:20",lat:18.592,lng:73.740}],finalStatus:"Completed"},design:{type:"External",designer:"Vendor — GreenCAD",assigned:"2026-06-08",completed:"2026-06-13",revisions:1,status:"Completed",finalCap:80,instType:"Rooftop"}},
+ {id:"SSE_RBD45818DelRef_62219",project:"Karol Bagh Mall",city:"Delhi",addr:"Karol Bagh",lat:28.651,lng:77.190,capacity:165,devReq:"Yes",hoto:"2026-06-01",received:"2026-05-31",dev:{devName:"Sunil Yadav",permission:"2026-06-02",blocks:[{sched:"2026-06-03",connected:"Completed",ts:"2026-06-03 09:55",lat:28.659,lng:77.205}],finalStatus:"Completed"},designHistory:[{rev:"Original",designer:"Meena Joshi",type:"Internal",assigned:"2026-06-04",completed:"2026-06-09",status:"Completed",tat:5,note:"First version"},{rev:"Revision R1",designer:"Meena Joshi",type:"Internal",assigned:"2026-06-10",completed:"2026-06-12",status:"Completed",tat:2,note:"Client layout change"},{rev:"Revision R2",designer:"Meena Joshi",type:"Internal",assigned:"2026-06-13",completed:"2026-06-15",status:"Completed",tat:2,note:"Inverter spec update"}],design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-04",completed:"2026-06-15",revisions:2,status:"Completed",finalCap:170,instType:"Ground mount",holdStart:"2026-06-08",holdEnd:"2026-06-11",holdReason:"Awaiting client roof access"}},
  {id:"SSE_MUM44120MumBan_55870",project:"Andheri Logistics",city:"Mumbai",addr:"Andheri East",lat:19.119,lng:72.869,capacity:240,devReq:"Yes",hoto:"2026-05-30",received:"2026-05-29",dev:{devName:"Pankaj Rao",permission:"2026-06-01",blocks:[{sched:"2026-06-02",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-04",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-06",connected:"Completed",ts:"2026-06-06 14:10",lat:19.150,lng:72.910}],finalStatus:"Completed",holdStart:"2026-06-03",holdEnd:"2026-06-04",holdReason:"DEV reassignment"},design:{type:"External",designer:"Vendor — SolDesign",assigned:"2026-06-07",completed:"",revisions:0,status:"Pending",finalCap:240,instType:"Rooftop"}},
  {id:"SSE_FOS46070PunFOS_47340",project:"Wakad Heights",city:"Pune",addr:"Wakad",lat:18.598,lng:73.762,capacity:55,devReq:"No",hoto:"2026-06-10",received:"2026-06-09",dev:null,design:{type:"Internal",designer:"Rohit Pawar",assigned:"2026-06-12",completed:"2026-06-16",revisions:0,status:"Completed",finalCap:55,instType:"Rooftop"}},
  {id:"SSE_DEL45820DelRef_62230",project:"Saket Plaza",city:"Delhi",addr:"Saket",lat:28.522,lng:77.210,capacity:18,devReq:"No",hoto:"2026-06-17",received:"2026-06-16",dev:null,design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-18",completed:"2026-06-19",revisions:0,status:"Completed",finalCap:18,instType:"Rooftop"}},
@@ -301,7 +313,7 @@ const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec
 const monthLbl=k=>k?MN[+k.slice(5,7)-1]+" "+k.slice(0,4):"—";
 
 function enrich(L){
-  L.cat=catFromCap(L.capacity);
+  L.cat=catFromCap((L.design&&L.design.finalCap>0)?L.design.finalCap:L.capacity);
   L.devReqState=L.devReq==="Yes"?"Required":L.devReq==="No"?"Not required":"Not assigned";
   if(L.dev){const b=L.dev.blocks,eff=b[b.length-1];L.dev.effective=eff;
     L.dev.reschedules=b.filter(x=>x.connected==="Rescheduled").length;
@@ -325,6 +337,9 @@ function enrich(L){
   if(d.status==="Pending"&&d.assigned)d.ageDays=Math.round(dayDiff(d.assigned,TODAY.toISOString().slice(0,10)));
   else if(d.status==="Pending")d.ageDays=Math.round(dayDiff(L.hoto,TODAY.toISOString().slice(0,10)));
   else d.ageDays=null;
+  // all related records (revisions / re-visits) — synthesise from single record if no explicit history
+  L.devAll=(L.devHistory&&L.devHistory.length)?L.devHistory:(L.dev?[{rev:"Original DEV",devName:L.dev.devName,permission:L.dev.permission,completed:L.dev.completedDate,status:L.dev.finalStatus,reschedules:L.dev.reschedules,distKm:L.dev.distKm,onsite:L.dev.onsite,tat:L.dev.devTat,holdDays:L.dev.holdDays,note:""}]:[]);
+  L.designAll=(L.designHistory&&L.designHistory.length)?L.designHistory:[{rev:d.revisions>0?"Latest (R"+d.revisions+")":"Original",designer:d.designer,type:d.type,assigned:d.assigned,completed:d.completed,status:d.status,tat:d.designTat,target:d.target,sla:d.slaState,holdDays:d.holdDays,note:d.cancelReason||""}];
   return L;
 }
 let DATA=JSON.parse(JSON.stringify(SAMPLE));
@@ -649,7 +664,7 @@ function renderProjects(){const q=($("#projSearch").value||"").toLowerCase();
   const L=filtered().filter(x=>!q||(x.project+x.id+x.city+x.cat).toLowerCase().includes(q));
   $("#projTbl").innerHTML=`<thead><tr><th>Project</th><th>City</th><th>Size</th><th>HOTO</th><th>DEV req.</th><th>DEV</th><th>Designer</th><th>Type</th><th>Design</th><th>TAT</th><th></th></tr></thead><tbody>`+
    L.map(L0=>{const d=L0.design;const tat=d.status==="Completed"&&d.designTat!=null?`${d.designTat}d`:(L0.dev&&L0.dev.devTat!=null?`DEV ${L0.dev.devTat}d`:"—");
-     return `<tr><td><b>${L0.project}</b><br><span class="mono muted" style="font-size:10px">${L0.id}</span></td><td>${L0.city}</td><td><span class="cat cat-${L0.cat}">${L0.cat}</span></td><td class="mono" style="font-size:11px">${monthLbl(monthKey(L0.hoto))}</td><td>${L0.devReqState}</td><td>${L0.dev?statusPill(L0.dev.finalStatus):'<span class="muted">—</span>'}</td><td>${d.assignedTo||'<span class="muted">—</span>'}</td><td>${d.type}</td><td>${statusPill(d.status)}</td><td class="tat-cell">${tat}</td><td><a class="link" onclick='openLead("${L0.id}")'>Journey →</a></td></tr>`;}).join("")+`</tbody>`;
+     return `<tr><td><b>${L0.project}</b><br><span class="mono muted" style="font-size:10px">${L0.id}</span></td><td>${L0.city}</td><td><span class="cat cat-${L0.cat}">${L0.cat}</span></td><td class="mono" style="font-size:11px">${monthLbl(monthKey(L0.hoto))}</td><td>${L0.devReqState}</td><td>${L0.dev?statusPill(L0.dev.finalStatus):'<span class="muted">—</span>'}</td><td>${d.assignedTo||'<span class="muted">—</span>'}</td><td>${d.type}</td><td>${statusPill(d.status)}</td><td class="tat-cell">${tat}</td><td style="white-space:nowrap"><button class="minibtn" onclick='openDevAll("${L0.id}")'>DEV data</button><button class="minibtn" onclick='openDesignAll("${L0.id}")'>Design data</button><button class="minibtn j" onclick='openLead("${L0.id}")'>Journey</button></td></tr>`;}).join("")+`</tbody>`;
   if(!L.length)$("#projTbl").innerHTML+=`<tbody><tr><td colspan="11" style="text-align:center;padding:30px" class="muted">No projects match.</td></tr></tbody>`;}
 
 /* ====== TEAM ====== */
@@ -691,6 +706,17 @@ function leadTab(id,tab){const L=DATA.leads.find(x=>x.id===id);$$("#mBody .dtab 
      <h4 style="font-size:13px;margin:16px 0 8px">Visit attempts</h4><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Scheduled</th><th>Result</th><th>Timestamp</th><th>Lat-Long</th></tr></thead><tbody>${d.blocks.map((b,i)=>`<tr><td>${i+1}</td><td>${b.sched}</td><td>${statusPill(b.connected)}</td><td class="mono" style="font-size:11px">${b.ts||"—"}</td><td class="mono" style="font-size:11px">${b.lat?b.lat+", "+b.lng:"—"}</td></tr>`).join("")}</tbody></table></div>`;}
   else{const d=L.design;B.innerHTML=`<div class="kv"><div class="k">Designer</div><div class="v">${d.designer}</div><div class="k">Type</div><div class="v">${d.type}</div><div class="k">Status</div><div class="v">${statusPill(d.status)}</div><div class="k">Assigned</div><div class="v">${d.assigned||"—"}</div><div class="k">Completed</div><div class="v">${d.completed||"—"}</div><div class="k">Revisions</div><div class="v">${d.revisions}</div><div class="k">Final capacity</div><div class="v">${d.finalCap} kWp</div><div class="k">Installation</div><div class="v">${d.instType}</div>${d.status==="Cancelled"?`<div class="k">Cancellation remark</div><div class="v" style="color:var(--red)">${d.cancelReason||d.instType}</div>`:""}<div class="k">Design on hold</div><div class="v">${d.holdDays?`${d.holdDays} d (${d.holdStart} → ${d.holdEnd})`:"—"}</div><div class="k">Reason for hold</div><div class="v">${d.holdReason||"—"}</div><div class="k">Design TAT (gross)</div><div class="v">${d.grossTat==null?"—":d.grossTat+" days"}</div><div class="k">Design TAT (net of hold)</div><div class="v"><b>${d.designTat==null?"—":d.designTat+" days"}</b></div><div class="k">SLA target</div><div class="v">${d.target===0?"manual review":d.target+" days"}</div><div class="k">SLA result</div><div class="v">${d.status==="Completed"?statusPill(d.slaState):"—"}</div></div>`;}
 }
+function openDevAll(id){const L=DATA.leads.find(x=>x.id===id);if(!L)return;const rows=L.devAll;
+  if(!rows.length){showModal("DEV data — "+L.project,L.id,'<div class="muted">No DEV required / no DEV records for this lead.</div>');return;}
+  const body=`<div class="tbl-wrap"><table><thead><tr><th>Stage / re-visit</th><th>DEV</th><th>Permission</th><th>Completed</th><th>Status</th><th>Resch.</th><th>Net TAT</th><th>Location</th><th>Note</th></tr></thead><tbody>`+
+   rows.map(r=>{const loc=r.distKm==null?'<span class="muted">—</span>':(r.onsite?`<span style="color:var(--green)">on-site ${r.distKm}km</span>`:`<span style="color:var(--red)">off-site ${r.distKm}km</span>`);
+     return `<tr><td><b>${r.rev}</b></td><td>${r.devName||"—"}</td><td class="mono" style="font-size:11px">${r.permission||"—"}</td><td class="mono" style="font-size:11px">${r.completed||"—"}</td><td>${statusPill(r.status)}</td><td>${r.reschedules??"—"}</td><td class="tat-cell">${r.tat==null?"—":r.tat+"d"}${r.holdDays?` <span class="muted">(−${r.holdDays}d hold)</span>`:""}</td><td>${loc}</td><td style="font-size:12px;color:var(--txt-2)">${r.note||"—"}</td></tr>`;}).join("")+`</tbody></table></div>`;
+  showModal("DEV data — "+L.project,`${L.id} · ${rows.length} visit(s) incl. re-visits`,body);}
+function openDesignAll(id){const L=DATA.leads.find(x=>x.id===id);if(!L)return;const rows=L.designAll;
+  const body=`<div class="tbl-wrap"><table><thead><tr><th>Version</th><th>Designer</th><th>Type</th><th>Assigned</th><th>Completed</th><th>Status</th><th>Net TAT</th><th>SLA</th><th>Note</th></tr></thead><tbody>`+
+   rows.map(r=>{const sla=(r.sla&&r.sla!=="—")?statusPill(r.sla):(r.target===0?'<span class="pill p-gray"><span class="d"></span>manual</span>':'<span class="muted">—</span>');
+     return `<tr><td><b>${r.rev}</b></td><td>${r.designer||"—"}</td><td>${r.type||"—"}</td><td class="mono" style="font-size:11px">${r.assigned||"—"}</td><td class="mono" style="font-size:11px">${r.completed||"—"}</td><td>${statusPill(r.status)}</td><td class="tat-cell">${r.tat==null?"—":r.tat+"d"}${r.holdDays?` <span class="muted">(−${r.holdDays}d hold)</span>`:""}</td><td>${sla}</td><td style="font-size:12px;color:var(--txt-2)">${r.note||"—"}</td></tr>`;}).join("")+`</tbody></table></div>`;
+  showModal("Design data — "+L.project,`${L.id} · ${rows.length} version(s) incl. revisions`,body);}
 function closeModal(){$("#modal").classList.remove("show");}
 
 /* ====== nav ====== */
@@ -703,15 +729,92 @@ function renderAll(){renderOverview();renderInsights();renderMonthly();renderDes
 buildFilters();renderAll();
 
 /* ====== live connect ====== */
-function toggleConnect(){$("#connTxt").textContent="Connecting…";
-  Papa.parse(SOURCES.master,{download:true,header:true,complete:res=>{
-    if(!res.data||!res.data.length){return fail();}
-    // Live column mapping (A–K basics, P DEV-required, Q–T assign, W–AK 3 blocks,
-    // last filled = effective, distance from F vs completed lat-long) plugs into
-    // the same lead shape, then: DATA.leads = mapped.map(enrich); buildFilters(); renderAll();
-    $("#connBtn").classList.add("live");$("#connTxt").textContent="Live · Master ("+res.data.length+" rows)";
-  },error:fail});
-  function fail(){$("#connBtn").classList.remove("live");$("#connTxt").textContent="Sheet unreachable — publish/share it. Using sample.";}}
+/* ============================================================
+   LIVE DATA MAPPING
+   Runs in the browser (this environment has no internet, so it
+   only fetches when you open the file with the sheet shared as
+   "Anyone with link · Viewer"). DEV status is taken AS-IS from
+   the sheet (column "DEV Status"); category is derived from final
+   design capacity. Header names below match the columns you gave;
+   pick() is fuzzy (case/space/punctuation-insensitive) so minor
+   spelling drift still resolves.
+   ============================================================ */
+const DEV_TAT_START = "DEV Accepted timestamp"; // change to "Asssigned Time_Stamp" if you prefer
+function fetchCsv(url){return new Promise((res,rej)=>Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:r=>res(r.data||[]),error:rej}));}
+function norm(s){return String(s==null?"":s).toLowerCase().replace(/[^a-z0-9]/g,"");}
+function pick(row,...keys){for(const k of keys){if(row[k]!=null&&String(row[k]).trim()!=="")return String(row[k]).trim();}
+  const want=keys.map(norm);for(const rk in row){if(want.includes(norm(rk))&&String(row[rk]).trim()!=="")return String(row[rk]).trim();}return "";}
+function baseId(id){return String(id||"").split("|")[0].split("~")[0].trim();}
+function rvNum(uid){const m=String(uid).match(/(?:RV\|?|\|R)(\d+)/i);return m?+m[1]:0;}
+function splitLL(s){if(!s)return[null,null];const m=String(s).split(/[, ]+/).map(parseFloat).filter(v=>!isNaN(v));return m.length>=2?[m[0],m[1]]:[null,null];}
+function isoDate(s){if(!s)return"";const d=new Date(s);return isNaN(d)?String(s).slice(0,10):d.toISOString().slice(0,10);}
+function normConn(s){s=String(s||"").toLowerCase();if(s.includes("complet"))return"Completed";if(s.includes("cancel"))return"Cancelled";if(s.includes("resched"))return"Rescheduled";if(s.includes("pend"))return"Pending";return s?"Rescheduled":"Pending";}
+function devBlocks(r){const mk=(d,c,s,ts,ll)=>{if(!d&&!ts&&!c&&!s)return null;const[la,ln]=splitLL(ll);return{sched:isoDate(d),connected:normConn(c||s),ts:ts?String(ts).trim():"",lat:la,lng:ln};};
+  const b=[mk(pick(r,"Meeting scheduled date"),pick(r,"Meeting connected ?"),pick(r,"Meeting status"),pick(r,"Meeting Timestamp"),pick(r,"Meeting Latlong")),
+           mk(pick(r,"Rescheduled date"),pick(r,"R.Meeting connected ?"),pick(r,"Rescheduled status"),pick(r,"Reschedule timestamp"),pick(r,"Reschedule Latlong")),
+           mk(pick(r,"Rescheduled_1 date"),pick(r,"R1.Meeting connected ?"),pick(r,"Rescheduled_1 status"),pick(r,"Reschedule_1 timestamp"),pick(r,"Reschedule_1 Latlong"))].filter(Boolean);
+  return b.length?b:[{sched:"",connected:"Pending",ts:"",lat:null,lng:null}];}
+function devFromRow(r){
+  if(!pick(r,"DEV Name")&&!pick(r,"DEV Status")&&!pick(r,"Meeting scheduled date"))return null;
+  return {devName:pick(r,"DEV Name"),permission:isoDate(pick(r,DEV_TAT_START,"DEV Accepted timestamp","Asssigned Time_Stamp")),
+    blocks:devBlocks(r),finalStatus:normConn(pick(r,"DEV Status"))||normConn(devBlocks(r).slice(-1)[0].connected),
+    rawStatus:pick(r,"DEV Status"),holdStart:isoDate(pick(r,"Hold During DEV")),holdEnd:isoDate(pick(r,"Unhold During DEV")),holdReason:pick(r,"Reason for Hold")};}
+function buildDesign(drows,m0){
+  if(!drows.length){ // fall back to master design columns
+    const completed=isoDate(pick(m0,"Completed Timestamp"));const inst=pick(m0,"Installation Type");
+    const cancelled=/area not fit|cancel/i.test(inst);
+    return {type:/ext|ode/i.test(pick(m0,"Designer Type"))?"External":"Internal",designer:pick(m0,"Assigned Designer")||"—",
+      assigned:isoDate(pick(m0,"Assigned Timestamp")),completed,revisions:+pick(m0,"No of Revisions")||0,
+      status:cancelled?"Cancelled":completed?"Completed":"Pending",finalCap:parseFloat(pick(m0,"Capacity"))||0,
+      instType:inst||"Rooftop",cancelReason:pick(m0,"DEV Delay Reason"),_all:[]};}
+  drows.sort((a,b)=>rvNum(pick(a,"UniqueID"))-rvNum(pick(b,"UniqueID")));
+  const all=drows.map((r,i)=>{const completed=isoDate(pick(r,"Design completed on","Completed time"));const inst=pick(r,"Installation Type");
+    const cancelled=/area not fit|cancel/i.test(inst);const assigned=isoDate(pick(r,"Assigned time"));
+    const hs=isoDate(pick(r,"Design On Hold")),he=isoDate(pick(r,"Design Unhold"));
+    return {rev:i===0?"Original":"Revision R"+i,designer:pick(r,"Assigned Designer")||"—",type:/ext|ode/i.test(pick(r,"Designer Type"))?"External":"Internal",
+      assigned,completed,status:cancelled?"Cancelled":completed?"Completed":"Pending",
+      tat:dayDiff(assigned,completed),holdDays:(hs&&he)?Math.max(0,dayDiff(hs,he)):0,
+      cap:parseFloat(pick(r,"Capacity"))||0,note:pick(r,"Design Delay Reason"),instType:inst};});
+  const latest=all[all.length-1];const finalCap=[...all].reverse().find(x=>x.cap>0)?.cap||0;
+  const last=drows[drows.length-1];
+  return {type:latest.type,designer:latest.designer,assigned:all[0].assigned,completed:latest.completed,
+    revisions:all.length-1,status:all.some(x=>x.status==="Cancelled")?"Cancelled":(latest.completed?"Completed":"Pending"),
+    finalCap,instType:latest.instType||"Rooftop",cancelReason:pick(last,"Design Delay Reason"),
+    holdStart:isoDate(pick(last,"Design On Hold")),holdEnd:isoDate(pick(last,"Design Unhold")),holdReason:pick(last,"Reason for Hold"),_all:all};}
+function buildLead(bid,rows,drows){
+  const m0=rows[0];const[lat,lng]=splitLL(pick(m0,"Lead Lat-Long"));
+  const design=buildDesign(drows,m0);
+  const devRows=rows.filter(r=>devFromRow(r));
+  const devHistory=devRows.map((r,i)=>{const dv=devFromRow(r);const eff=dv.blocks.slice(-1)[0];const cd=eff.ts?eff.ts.split(" ")[0]:null;
+    const dk=haversine(lat,lng,eff.lat,eff.lng);const hold=(dv.holdStart&&dv.holdEnd)?Math.max(0,dayDiff(dv.holdStart,dv.holdEnd)):0;const g=dayDiff(dv.permission,cd);
+    return {rev:i===0?"Original DEV":"Re-visit R"+i,devName:dv.devName,permission:dv.permission,completed:cd,status:dv.finalStatus,
+      reschedules:dv.blocks.filter(x=>x.connected==="Rescheduled").length,distKm:dk,onsite:dk==null?null:dk<=ONSITE_KM,
+      tat:g==null?null:Math.round((g-hold)*10)/10,holdDays:hold,note:dv.rawStatus};});
+  return enrich({id:bid,project:pick(m0,"Project name"),city:pick(m0,"City"),addr:pick(m0,"Address")||pick(m0,"Location of project"),
+    lat,lng,capacity:parseFloat(pick(m0,"Required DC capacity as per Bill"))||design.finalCap||0,
+    devReq:/yes/i.test(pick(m0,"DEV Requered ?"))?"Yes":(pick(m0,"DEV Requered ?")?"No":""),
+    hoto:isoDate(pick(m0,"Hoto Time_stamp")),received:isoDate(pick(m0,"Hoto Time_stamp")),
+    dev:devRows.length?devFromRow(devRows[0]):null,devHistory:devHistory.length?devHistory:undefined,
+    design,designHistory:design._all&&design._all.length?design._all:undefined});}
+
+async function toggleConnect(){
+  $("#updstamp").textContent="Connecting…";$("#connBtn").classList.remove("live");
+  try{
+    const [master,design,users,att]=await Promise.all([
+      fetchCsv(SOURCES.master),fetchCsv(SOURCES.design),fetchCsv(SOURCES.users).catch(()=>[]),fetchCsv(SOURCES.attendance).catch(()=>[])]);
+    if(!master.length)throw new Error("Master sheet empty / unreachable");
+    const dByLead={};design.forEach(r=>{const b=baseId(pick(r,"Lead ID"));if(b)(dByLead[b]=dByLead[b]||[]).push(r);});
+    const mByLead={};master.forEach(r=>{const b=baseId(pick(r,"Lead ID"));if(b)(mByLead[b]=mByLead[b]||[]).push(r);});
+    const leads=Object.entries(mByLead).map(([b,rows])=>buildLead(b,rows,dByLead[b]||[]));
+    DATA.leads=leads;
+    if(users.length)DATA.users=users.map(u=>({id:pick(u,"User_ID"),name:pick(u,"User Name","Name"),role:(pick(u,"Access Type")||"").toUpperCase().includes("ODE")?"ODE":(pick(u,"Access Type")||"").toUpperCase().includes("DE")&&!(pick(u,"Access Type")||"").toUpperCase().includes("DEV")?"DE":"DEV",city:pick(u,"City")}));
+    if(att.length)DATA.attendance=att.map(a=>({name:pick(a,"DEV Name"),present:/present/i.test(pick(a,"Present","Attendance Day status"))?"Present":(pick(a,"Leave")?"Leave":"—"),avail:pick(a,"Availablity")||"—"}));
+    buildFilters();renderAll();
+    $("#connBtn").classList.add("live");$("#updstamp").textContent=`Live · ${leads.length} leads · ${design.length} design rows`;
+  }catch(e){
+    $("#updstamp").textContent="Couldn't load — share sheet as 'Anyone with link'. Using sample. ("+e.message+")";
+  }
+}
 </script>
 </body>
 </html>
