@@ -4,162 +4,155 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SolarOps — DEV & Design Tracker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 :root{
-  --ink:#0E1B2A; --ink-2:#1C2E40; --panel:#12243A;
-  --bg:#EEF2F6; --surface:#FFFFFF; --line:#E2E8F0; --line-2:#CBD5E1;
-  --txt:#1A2433; --txt-2:#5A6B7E; --txt-3:#8A98A8;
-  --solar:#F5A623; --solar-d:#C77F0A; --solar-l:#FFF3DD;
-  --blue:#2563C9; --blue-l:#E5EEFB;
-  --green:#16A34A; --green-l:#E3F6EA;
-  --red:#DC2626; --red-l:#FCE7E7;
-  --amber:#D97706; --amber-l:#FEF1DC;
-  --teal:#0E9488; --teal-l:#DCF4F1;
-  --r:10px; --r-lg:14px;
-  --alpha:#2563C9; --beta:#0E9488; --gamma:#D97706; --omega:#9333EA;
+  --ink:#0E1B2A;--ink-2:#1C2E40;--bg:#EEF2F6;--surface:#FFF;--line:#E2E8F0;--line-2:#CBD5E1;
+  --txt:#1A2433;--txt-2:#5A6B7E;--txt-3:#8A98A8;
+  --solar:#F5A623;--blue:#2563C9;--blue-l:#E5EEFB;--green:#16A34A;--green-l:#E3F6EA;
+  --red:#DC2626;--red-l:#FCE7E7;--amber:#D97706;--amber-l:#FEF1DC;--teal:#0E9488;--teal-l:#DCF4F1;
+  --r:10px;--r-lg:14px;--alpha:#2563C9;--beta:#0E9488;--gamma:#D97706;--omega:#9333EA;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5}
 .mono{font-family:'IBM Plex Mono',monospace}
-.disp{font-family:'Space Grotesk',sans-serif}
-h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-.01em}
-
-/* ---- top bar ---- */
-.topbar{background:var(--ink);color:#fff;padding:0 20px;display:flex;align-items:center;gap:18px;height:62px;position:sticky;top:0;z-index:1000;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+h1,h2,h3,h4{font-family:'Space Grotesk';font-weight:600;letter-spacing:-.01em}
+.topbar{background:var(--ink);color:#fff;padding:0 20px;display:flex;align-items:center;gap:18px;height:60px;position:sticky;top:0;z-index:1200}
 .logo{display:flex;align-items:center;gap:11px}
-.logo-mark{width:38px;height:38px;flex:none}
-.logo-txt{display:flex;flex-direction:column;line-height:1.05}
-.logo-txt b{font-family:'Space Grotesk';font-weight:700;font-size:18px;letter-spacing:-.02em}
-.logo-txt span{font-size:10.5px;color:#9FB3C8;letter-spacing:.08em;text-transform:uppercase}
-.topbar .spacer{flex:1}
-.conn{display:flex;align-items:center;gap:8px;font-size:12px;color:#9FB3C8;background:rgba(255,255,255,.06);padding:7px 12px;border-radius:20px;cursor:pointer;transition:.15s}
-.conn:hover{background:rgba(255,255,255,.12)}
-.conn .dot{width:8px;height:8px;border-radius:50%;background:var(--solar)}
+.logo-mark{width:36px;height:36px}
+.logo-txt b{font-family:'Space Grotesk';font-weight:700;font-size:17px;display:block;line-height:1}
+.logo-txt span{font-size:10px;color:#9FB3C8;letter-spacing:.08em;text-transform:uppercase}
+.spacer{flex:1}
+.conn{display:flex;align-items:center;gap:8px;font-size:12px;color:#9FB3C8;background:rgba(255,255,255,.06);padding:7px 12px;border-radius:20px;cursor:pointer}
+.conn:hover{background:rgba(255,255,255,.12)}.conn .dot{width:8px;height:8px;border-radius:50%;background:var(--solar)}
 .conn.live .dot{background:#3DD68C;box-shadow:0 0 0 3px rgba(61,214,140,.25)}
-
-/* ---- tabs ---- */
-.tabs{background:var(--ink-2);padding:0 20px;display:flex;gap:2px;position:sticky;top:62px;z-index:999;overflow-x:auto}
-.tab{color:#9FB3C8;padding:13px 16px 11px;font-size:13.5px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;transition:.15s}
-.tab:hover{color:#D6E2EE}
-.tab.active{color:#fff;border-color:var(--solar)}
-.tab .ic{font-size:15px}
-
-.wrap{max-width:1320px;margin:0 auto;padding:22px 20px 60px}
-.view{display:none;animation:fade .35s ease}
-.view.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* ---- KPI ---- */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;position:relative;overflow:hidden}
+.tabs{background:var(--ink-2);padding:0 16px;display:flex;gap:1px;position:sticky;top:60px;z-index:1100;overflow-x:auto}
+.tab{color:#9FB3C8;padding:12px 14px 10px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap}
+.tab:hover{color:#D6E2EE}.tab.active{color:#fff;border-color:var(--solar)}
+/* filter bar */
+.fbar{background:var(--surface);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;position:sticky;top:103px;z-index:1000}
+.fbar .ftitle{font-size:11.5px;font-weight:600;color:var(--txt-2);text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
+.ms{position:relative}
+.ms-btn{font:inherit;font-size:12.5px;border:1px solid var(--line-2);background:var(--surface);color:var(--txt);padding:6px 11px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.ms-btn .cnt{background:var(--blue);color:#fff;border-radius:10px;font-size:10px;padding:0 6px;font-weight:600}
+.ms-btn:hover{border-color:var(--blue)}
+.ms-pop{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--line-2);border-radius:10px;box-shadow:0 8px 28px rgba(14,27,42,.16);padding:8px;width:210px;z-index:1500;max-height:280px;overflow-y:auto}
+.ms-pop.open{display:block}
+.ms-pop input.search{width:100%;font:inherit;font-size:12.5px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;margin-bottom:6px}
+.ms-opt{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:13px}
+.ms-opt:hover{background:#F4F7FA}.ms-opt input{accent-color:var(--blue)}
+.fclear{font-size:12px;color:var(--blue);cursor:pointer;margin-left:auto}.fclear:hover{text-decoration:underline}
+.wrap{max-width:1340px;margin:0 auto;padding:20px}
+.view{display:none}.view.active{display:block;animation:f .3s}@keyframes f{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 17px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
+.kpi:hover{box-shadow:0 4px 16px rgba(14,27,42,.08);transform:translateY(-1px)}
+.kpi.static{cursor:default}.kpi.static:hover{box-shadow:none;transform:none}
 .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--solar))}
-.kpi .lbl{font-size:11.5px;color:var(--txt-2);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:8px}
-.kpi .val{font-family:'Space Grotesk';font-size:30px;font-weight:700;line-height:1;letter-spacing:-.02em}
-.kpi .sub{font-size:12px;color:var(--txt-3);margin-top:6px}
-.kpi .val small{font-size:14px;color:var(--txt-2);font-weight:500}
-
-/* ---- panels ---- */
-.grid{display:grid;gap:16px}
-.g-2{grid-template-columns:1fr 1fr}
-.g-21{grid-template-columns:1.7fr 1fr}
+.kpi .lbl{font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:7px}
+.kpi .val{font-family:'Space Grotesk';font-size:28px;font-weight:700;line-height:1}
+.kpi .val small{font-size:13px;color:var(--txt-2);font-weight:500}
+.kpi .sub{font-size:11.5px;color:var(--txt-3);margin-top:5px}
+.grid{display:grid;gap:15px}.g-2{grid-template-columns:1fr 1fr}.g-3{grid-template-columns:repeat(3,1fr)}.g-21{grid-template-columns:1.6fr 1fr}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
-.panel-h{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
-.panel-h h3{font-size:15px}
-.panel-h .hint{font-size:12px;color:var(--txt-3)}
-.panel-b{padding:18px}
-.panel-b.flush{padding:0}
-
-/* ---- map ---- */
-#map{height:520px;width:100%}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:12px 18px;border-top:1px solid var(--line);font-size:12.5px}
-.legend .it{display:flex;align-items:center;gap:7px;color:var(--txt-2)}
-.legend .sw{width:11px;height:11px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line-2)}
-.map-ctl{display:flex;gap:6px;flex-wrap:wrap}
-.map-ctl button{font:inherit;font-size:12.5px;border:1px solid var(--line-2);background:var(--surface);color:var(--txt-2);padding:5px 11px;border-radius:7px;cursor:pointer}
-.map-ctl button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-
-/* ---- table ---- */
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:11px 14px;background:#F7F9FB;color:var(--txt-2);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
-td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
-tr:hover td{background:#FAFCFE}
-tr:last-child td{border-bottom:none}
-
-.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.panel-h{padding:13px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.panel-h h3{font-size:14.5px}.panel-h .hint{font-size:11.5px;color:var(--txt-3)}
+.panel-b{padding:16px}.panel-b.flush{padding:0}
+#map{height:500px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:11px 17px;border-top:1px solid var(--line);font-size:12px}
+.legend .it{display:flex;align-items:center;gap:6px;color:var(--txt-2)}.legend .sw{width:10px;height:10px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line-2)}
+.map-ctl{display:flex;gap:5px}.map-ctl button{font:inherit;font-size:12px;border:1px solid var(--line-2);background:var(--surface);color:var(--txt-2);padding:5px 10px;border-radius:7px;cursor:pointer}.map-ctl button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tbl-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 13px;background:#F7F9FB;color:var(--txt-2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle}tr:hover td{background:#FAFCFE}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
 .pill .d{width:6px;height:6px;border-radius:50%}
 .p-green{background:var(--green-l);color:#127538}.p-green .d{background:var(--green)}
 .p-red{background:var(--red-l);color:#B91C1C}.p-red .d{background:var(--red)}
 .p-amber{background:var(--amber-l);color:#A85B05}.p-amber .d{background:var(--amber)}
 .p-blue{background:var(--blue-l);color:#1D4FAB}.p-blue .d{background:var(--blue)}
 .p-gray{background:#EEF1F4;color:#5A6B7E}.p-gray .d{background:#94A3B8}
-.cat{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:600;color:#fff}
+.cat{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10.5px;font-weight:600;color:#fff}
 .cat-Alpha{background:var(--alpha)}.cat-Beta{background:var(--beta)}.cat-Gamma{background:var(--gamma)}.cat-Omega{background:var(--omega)}
-
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.filters select,.filters input{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--txt)}
-
-/* ---- bars ---- */
-.bar-row{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:12px;margin-bottom:12px;font-size:13px}
-.bar-row:last-child{margin-bottom:0}
-.bar-track{height:22px;background:#F1F4F7;border-radius:6px;overflow:hidden;display:flex}
-.bar-fill{height:100%;border-radius:6px 0 0 6px;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;color:#fff;font-size:11px;font-weight:600;min-width:24px}
-.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.cmp-card{border:1px solid var(--line);border-radius:var(--r);padding:16px}
-.cmp-card h4{font-family:'Space Grotesk';font-size:13px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.cmp-card .stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
-.cmp-card .stat:last-child{border:none}
-.cmp-card .stat b{font-family:'IBM Plex Mono';font-weight:500}
-
-.dist{display:flex;align-items:center;gap:6px;font-size:12.5px}
-.km{font-family:'IBM Plex Mono';font-size:12px}
-.muted{color:var(--txt-3)}
-.tat-cell{font-family:'IBM Plex Mono';font-size:12.5px}
-.over{color:var(--red);font-weight:600}
-.under{color:var(--green);font-weight:600}
-
-/* ---- timeline (lead detail) ---- */
+.bar-row{display:grid;grid-template-columns:130px 1fr 46px;align-items:center;gap:10px;margin-bottom:10px;font-size:12.5px;cursor:pointer}
+.bar-row:hover .bar-track{outline:2px solid var(--blue-l)}
+.bar-track{height:22px;background:#F1F4F7;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:7px;color:#fff;font-size:11px;font-weight:600;min-width:22px}
+.tat-cell{font-family:'IBM Plex Mono';font-size:12px}.over{color:var(--red);font-weight:600}.under{color:var(--green);font-weight:600}
+.muted{color:var(--txt-3)}.link{color:var(--blue);cursor:pointer;font-weight:500}.link:hover{text-decoration:underline}
+.dist{display:flex;align-items:center;gap:5px;font-size:12px}.km{font-family:'IBM Plex Mono';font-size:11px}
+/* funnel */
+.funnel{display:flex;flex-direction:column;gap:7px;max-width:680px;margin:0 auto}
+.fn{display:flex;align-items:center;gap:14px}
+.fn-bar{height:54px;border-radius:8px;display:flex;align-items:center;padding:0 18px;color:#fff;cursor:pointer;transition:.15s;position:relative}
+.fn-bar:hover{filter:brightness(1.07)}
+.fn-bar b{font-family:'Space Grotesk';font-size:24px;font-weight:700;margin-right:9px}
+.fn-bar span{font-size:13px;opacity:.95}
+.fn-side{font-size:12px;color:var(--txt-2);width:130px;flex:none}
+.split{display:flex;gap:10px;margin:4px 0 4px 0}
+.split .leg{flex:none;width:130px}
+.split .b2{flex:1;display:flex;gap:8px}
+.mini{flex:1;border-radius:8px;padding:9px 12px;color:#fff;cursor:pointer}.mini:hover{filter:brightness(1.07)}
+.mini b{font-family:'Space Grotesk';font-size:18px;display:block}.mini span{font-size:11px;opacity:.92}
+/* calendar */
+.cal-h{display:flex;align-items:center;gap:12px}
+.cal-nav{font:inherit;border:1px solid var(--line-2);background:var(--surface);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:15px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:16px}
+.cal .dow{font-size:11px;color:var(--txt-3);font-weight:600;text-align:center;padding-bottom:4px}
+.cell{min-height:78px;border:1px solid var(--line);border-radius:8px;padding:5px 6px;font-size:11px}
+.cell.out{background:#FAFBFC;color:var(--txt-3)}
+.cell .dn{font-weight:600;font-size:11px;color:var(--txt-2);margin-bottom:3px}
+.ev{font-size:10.5px;padding:1px 5px;border-radius:4px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-dev{background:var(--solar);color:#5A3D00}.ev-dsn{background:var(--blue-l);color:#1D4FAB}
+.cell.has{cursor:pointer}.cell.has:hover{border-color:var(--blue);background:#F7FAFE}
+.daycard{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:13px 15px;margin-bottom:11px}
+.daycard.dev{border-left-color:var(--solar);background:#FFFBF3}
+.daycard.dsn{border-left-color:var(--blue);background:#F6F9FE}
+.daycard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.daycard .pn{font-family:'Space Grotesk';font-weight:600;font-size:14.5px}
+.daycard .pid{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--txt-3)}
+.daycard .meta{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:12.5px;margin-bottom:8px}
+.daycard .meta .m{color:var(--txt-2)}.daycard .meta .m b{color:var(--txt);font-weight:600}
+.daycard .strip{background:rgba(0,0,0,.03);border-radius:7px;padding:8px 11px;font-size:12px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.daycard .strip .s b{font-weight:600}
+/* cohort */
+.cohort td.hm{font-family:'IBM Plex Mono';font-weight:500}
+.heat{text-align:center;font-family:'IBM Plex Mono';font-weight:500}
+/* modal */
 .modal-bg{position:fixed;inset:0;background:rgba(14,27,42,.55);display:none;align-items:flex-start;justify-content:center;z-index:2000;padding:40px 16px;overflow-y:auto}
 .modal-bg.show{display:flex}
-.modal{background:var(--surface);border-radius:var(--r-lg);max-width:760px;width:100%;overflow:hidden}
-.modal-h{background:var(--ink);color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:flex-start}
+.modal{background:var(--surface);border-radius:var(--r-lg);max-width:780px;width:100%;overflow:hidden}
+.modal-h{background:var(--ink);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start}
 .modal-h .x{cursor:pointer;font-size:22px;color:#9FB3C8;line-height:1}
-.modal-b{padding:22px}
-.tl{position:relative;padding-left:26px}
-.tl::before{content:'';position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line)}
-.tl-it{position:relative;padding-bottom:18px}
-.tl-it::before{content:'';position:absolute;left:-22px;top:3px;width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--line-2)}
-.tl-it.ok::before{border-color:var(--green);background:var(--green)}
-.tl-it.warn::before{border-color:var(--amber);background:var(--amber)}
-.tl-it.bad::before{border-color:var(--red);background:var(--red)}
-.tl-it .t{font-weight:600;font-size:13.5px}
-.tl-it .m{font-size:12.5px;color:var(--txt-2);font-family:'IBM Plex Mono'}
-
-.note{background:var(--solar-l);border:1px solid #F0D8A0;border-radius:var(--r);padding:12px 14px;font-size:12.5px;color:#8A6206;margin-bottom:16px;display:flex;gap:9px}
-.link{color:var(--blue);cursor:pointer;text-decoration:none;font-weight:500}
-.link:hover{text-decoration:underline}
-@media(max-width:880px){.g-2,.g-21,.cmp{grid-template-columns:1fr}}
+.modal-b{padding:20px;max-height:70vh;overflow-y:auto}
+.tl{position:relative;padding-left:24px}.tl::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tl-it{position:relative;padding-bottom:16px}.tl-it::before{content:'';position:absolute;left:-22px;top:3px;width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--line-2)}
+.tl-it.ok::before{border-color:var(--green);background:var(--green)}.tl-it.warn::before{border-color:var(--amber);background:var(--amber)}.tl-it.bad::before{border-color:var(--red);background:var(--red)}
+.tl-it .t{font-weight:600;font-size:13px}.tl-it .m{font-size:12px;color:var(--txt-2);font-family:'IBM Plex Mono'}
+.dtab{display:flex;gap:6px;margin-bottom:14px}.dtab button{font:inherit;font-size:13px;border:1px solid var(--line-2);background:var(--surface);padding:6px 13px;border-radius:8px;cursor:pointer}.dtab button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:6px 14px;font-size:13px}.kv .k{color:var(--txt-2)}.kv .v{font-weight:500}
+.note{background:var(--amber-l);border:1px solid #F0D8A0;border-radius:var(--r);padding:11px 13px;font-size:12px;color:#8A6206;margin-bottom:15px;display:flex;gap:9px}
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px}
+.ins{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:11px 13px}
+.ins.good{border-left-color:var(--green);background:var(--green-l)}
+.ins.bad{border-left-color:var(--red);background:var(--red-l)}
+.ins.neu{border-left-color:var(--blue);background:var(--blue-l)}
+.ins .it{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.ins .it .ico{font-size:14px}
+.ins .ds{font-size:11.5px;color:var(--txt-2);margin-top:3px}
+.ins.good .it{color:#127538}.ins.bad .it{color:#B91C1C}.ins.neu .it{color:#1D4FAB}
+@media(max-width:880px){.g-2,.g-21,.g-3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="logo">
-    <svg class="logo-mark" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="9" fill="#F5A623"/>
-      <g stroke="#F5A623" stroke-width="2.6" stroke-linecap="round">
-        <line x1="24" y1="5" x2="24" y2="11"/><line x1="24" y1="37" x2="24" y2="43"/>
-        <line x1="5" y1="24" x2="11" y2="24"/><line x1="37" y1="24" x2="43" y2="24"/>
-        <line x1="10.5" y1="10.5" x2="14.8" y2="14.8"/><line x1="33.2" y1="33.2" x2="37.5" y2="37.5"/>
-        <line x1="37.5" y1="10.5" x2="33.2" y2="14.8"/><line x1="14.8" y1="33.2" x2="10.5" y2="37.5"/>
-      </g>
-    </svg>
+    <svg class="logo-mark" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="9" fill="#F5A623"/><g stroke="#F5A623" stroke-width="2.6" stroke-linecap="round"><line x1="24" y1="5" x2="24" y2="11"/><line x1="24" y1="37" x2="24" y2="43"/><line x1="5" y1="24" x2="11" y2="24"/><line x1="37" y1="24" x2="43" y2="24"/><line x1="10.5" y1="10.5" x2="14.8" y2="14.8"/><line x1="33.2" y1="33.2" x2="37.5" y2="37.5"/><line x1="37.5" y1="10.5" x2="33.2" y2="14.8"/><line x1="14.8" y1="33.2" x2="10.5" y2="37.5"/></g></svg>
     <div class="logo-txt"><b>SolarOps</b><span>DEV &amp; Design Tracker</span></div>
   </div>
   <div class="spacer"></div>
@@ -167,541 +160,558 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div class="tabs" id="tabs">
-  <div class="tab active" data-v="overview"><span class="ic">◈</span>Overview</div>
-  <div class="tab" data-v="map"><span class="ic">◎</span>Map</div>
-  <div class="tab" data-v="dev"><span class="ic">⚲</span>DEV tracking</div>
-  <div class="tab" data-v="design"><span class="ic">✎</span>Design tracking</div>
-  <div class="tab" data-v="tat"><span class="ic">◷</span>TAT &amp; SLA</div>
-  <div class="tab" data-v="team"><span class="ic">⚇</span>Team &amp; attendance</div>
+  <div class="tab active" data-v="overview">Overview</div>
+  <div class="tab" data-v="funnel">Funnel</div>
+  <div class="tab" data-v="map">Map</div>
+  <div class="tab" data-v="dev">DEV</div>
+  <div class="tab" data-v="design">Design</div>
+  <div class="tab" data-v="pending">Pending</div>
+  <div class="tab" data-v="tat">TAT &amp; SLA</div>
+  <div class="tab" data-v="calendar">Calendar</div>
+  <div class="tab" data-v="cohort">Cohort</div>
+  <div class="tab" data-v="projects">Projects</div>
+  <div class="tab" data-v="team">Team</div>
+</div>
+
+<div class="fbar" id="fbar">
+  <span class="ftitle">Filters</span>
+  <!-- multi-selects injected here -->
+  <span class="fclear" onclick="clearFilters()">Clear all</span>
 </div>
 
 <div class="wrap">
-
-  <!-- OVERVIEW -->
   <div class="view active" id="v-overview">
-    <div class="kpis" id="kpis"></div>
-    <div class="grid g-21">
-      <div class="panel">
-        <div class="panel-h"><h3>Pipeline by stage</h3><span class="hint">all leads</span></div>
-        <div class="panel-b" id="stageBars"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-h"><h3>Projects by category</h3><span class="hint">Alpha · Beta · Gamma · Omega</span></div>
-        <div class="panel-b" id="catBars"></div>
-      </div>
+    <div class="kpis" id="ovKpis"></div>
+    <div class="panel" style="margin-bottom:15px"><div class="panel-h"><h3>Insights</h3><span class="hint">what's going well · what needs attention</span></div><div class="panel-b" id="insights"></div></div>
+    <div class="grid g-2">
+      <div class="panel"><div class="panel-h"><h3>By month</h3><span class="hint">leads · DEV done · design done — click a bar</span></div><div class="panel-b" id="byMonth"></div></div>
+      <div class="panel"><div class="panel-h"><h3>By HOTO month</h3><span class="hint">click a bar</span></div><div class="panel-b" id="byHoto"></div></div>
     </div>
-    <div class="grid" style="margin-top:16px">
-      <div class="panel">
-        <div class="panel-h"><h3>SLA performance</h3><span class="hint">actual vs target TAT</span></div>
-        <div class="panel-b" id="slaSummary"></div>
-      </div>
+    <div class="grid g-2" style="margin-top:15px">
+      <div class="panel"><div class="panel-h"><h3>By city</h3><span class="hint">click a bar to drill in</span></div><div class="panel-b" id="byCity"></div></div>
+      <div class="panel"><div class="panel-h"><h3>By category</h3><span class="hint">Alpha · Beta · Gamma · Omega</span></div><div class="panel-b" id="byCat"></div></div>
     </div>
+    <div class="panel" style="margin-top:15px"><div class="panel-h"><h3>Monthly summary</h3><span class="hint">assigned · completed · on-time — click any number</span></div><div class="panel-b flush"><div class="tbl-wrap"><table id="monthlyTbl"></table></div></div></div>
+    <div class="panel" style="margin-top:15px"><div class="panel-h"><h3>Designer summary</h3><span class="hint">total assigned · completed · on-time · avg net TAT — click any number</span></div><div class="panel-b flush"><div class="tbl-wrap"><table id="designerTbl"></table></div></div></div>
   </div>
 
-  <!-- MAP -->
+  <div class="view" id="v-funnel">
+    <div class="panel"><div class="panel-h"><h3>Lead → DEV → Design funnel</h3><span class="hint">click any block for the underlying leads</span></div>
+      <div class="panel-b" id="funnel"></div></div>
+  </div>
+
   <div class="view" id="v-map">
-    <div class="panel">
-      <div class="panel-h"><h3>Project &amp; DEV locations</h3>
-        <div class="map-ctl" id="mapCtl">
-          <button class="on" data-c="city">Colour: City</button>
-          <button data-c="cat">Category</button>
-          <button data-c="dev">DEV status</button>
-        </div>
-      </div>
-      <div class="panel-b flush"><div id="map"></div></div>
-      <div class="legend" id="mapLegend"></div>
-    </div>
+    <div class="panel"><div class="panel-h"><h3>Project &amp; DEV locations</h3>
+      <div class="map-ctl" id="mapCtl"><button class="on" data-c="city">City</button><button data-c="cat">Category</button><button data-c="dev">DEV status</button></div></div>
+      <div class="panel-b flush"><div id="map"></div></div><div class="legend" id="mapLegend"></div></div>
   </div>
 
-  <!-- DEV -->
-  <div class="view" id="v-dev">
-    <div class="kpis" id="devKpis"></div>
-    <div class="panel">
-      <div class="panel-h"><h3>DEV records</h3>
-        <div class="filters">
-          <select id="devStatusF"><option value="">All status</option><option>Completed</option><option>Rescheduled</option><option>Cancelled</option><option>Pending</option></select>
-          <input id="devSearch" placeholder="Search lead / DEV…" style="width:170px">
-        </div>
-      </div>
-      <div class="panel-b flush"><div class="tbl-wrap"><table id="devTbl"></table></div></div>
+  <div class="view" id="v-dev"><div class="kpis" id="devKpis"></div>
+    <div class="panel"><div class="panel-h"><h3>DEV records</h3></div><div class="panel-b flush"><div class="tbl-wrap"><table id="devTbl"></table></div></div></div></div>
+
+  <div class="view" id="v-design"><div class="kpis" id="dsnKpis"></div>
+    <div class="panel"><div class="panel-h"><h3>Design records</h3></div><div class="panel-b flush"><div class="tbl-wrap"><table id="dsnTbl"></table></div></div></div></div>
+
+  <div class="view" id="v-pending">
+    <div class="kpis" id="pendKpis"></div>
+    <div class="grid g-3">
+      <div class="panel"><div class="panel-h"><h3>Pending by city</h3></div><div class="panel-b" id="pendCity"></div></div>
+      <div class="panel"><div class="panel-h"><h3>Pending by designer</h3></div><div class="panel-b" id="pendDsn"></div></div>
+      <div class="panel"><div class="panel-h"><h3>Pending by size</h3></div><div class="panel-b" id="pendCat"></div></div>
     </div>
+    <div class="panel" style="margin-top:15px"><div class="panel-h"><h3>Pending designs — ageing</h3><span class="hint">days since assigned</span></div>
+      <div class="panel-b flush"><div class="tbl-wrap"><table id="pendTbl"></table></div></div></div>
   </div>
 
-  <!-- DESIGN -->
-  <div class="view" id="v-design">
-    <div class="kpis" id="dsnKpis"></div>
-    <div class="panel">
-      <div class="panel-h"><h3>Design records</h3>
-        <div class="filters">
-          <select id="dsnStatusF"><option value="">All status</option><option>Completed</option><option>Pending</option><option>Cancelled</option></select>
-          <select id="dsnTypeF"><option value="">Internal + External</option><option>Internal</option><option>External</option></select>
-        </div>
-      </div>
-      <div class="panel-b flush"><div class="tbl-wrap"><table id="dsnTbl"></table></div></div>
-    </div>
-  </div>
-
-  <!-- TAT -->
   <div class="view" id="v-tat">
-    <div class="note"><span>⚠</span><span>SLA targets apply to new leads only. <b>Omega</b> (≥200 kWp) and customised MMS have no fixed TAT — these are marked "manual review", never auto-flagged as delayed. DEV TAT is counted from client permission received, not lead assignment.</span></div>
+    <div class="note"><span>⚠</span><span>SLA applies to new leads only. <b>Omega</b> (≥200 kWp) &amp; customised MMS = manual review, never auto-flagged. DEV TAT counts from client-permission date.</span></div>
     <div class="grid g-2">
-      <div class="panel">
-        <div class="panel-h"><h3>Internal vs External designers</h3></div>
-        <div class="panel-b"><div class="cmp" id="intExt"></div></div>
-      </div>
-      <div class="panel">
-        <div class="panel-h"><h3>SLA matrix (targets, days)</h3><span class="hint">first version</span></div>
-        <div class="panel-b flush"><div class="tbl-wrap"><table id="slaMatrix"></table></div></div>
-      </div>
+      <div class="panel"><div class="panel-h"><h3>Internal vs External</h3></div><div class="panel-b"><div class="grid g-2" id="intExt"></div></div></div>
+      <div class="panel"><div class="panel-h"><h3>SLA matrix (days)</h3></div><div class="panel-b flush"><div class="tbl-wrap"><table id="slaMatrix"></table></div></div></div>
     </div>
-    <div class="panel" style="margin-top:16px">
-      <div class="panel-h"><h3>Delay tracking — completed designs</h3><span class="hint">actual vs target, by category &amp; scenario</span></div>
-      <div class="panel-b flush"><div class="tbl-wrap"><table id="delayTbl"></table></div></div>
-    </div>
+    <div class="panel" style="margin-top:15px"><div class="panel-h"><h3>Delay tracking — completed designs</h3></div><div class="panel-b flush"><div class="tbl-wrap"><table id="delayTbl"></table></div></div></div>
   </div>
 
-  <!-- TEAM -->
-  <div class="view" id="v-team">
-    <div class="kpis" id="teamKpis"></div>
-    <div class="grid g-2">
-      <div class="panel">
-        <div class="panel-h"><h3>DEV availability today</h3></div>
-        <div class="panel-b flush"><div class="tbl-wrap"><table id="attTbl"></table></div></div>
-      </div>
-      <div class="panel">
-        <div class="panel-h"><h3>Designer workload</h3><span class="hint">assigned designs</span></div>
-        <div class="panel-b" id="dsnLoad"></div>
-      </div>
-    </div>
+  <div class="view" id="v-calendar">
+    <div class="panel"><div class="panel-h">
+      <div class="cal-h"><button class="cal-nav" onclick="calMove(-1)">‹</button><h3 id="calLabel"></h3><button class="cal-nav" onclick="calMove(1)">›</button></div>
+      <div class="map-ctl" id="calCtl"><button class="on" data-c="both">DEV + Design</button><button data-c="dev">DEV</button><button data-c="dsn">Design</button></div>
+    </div><div class="cal" id="cal"></div></div>
   </div>
 
+  <div class="view" id="v-cohort">
+    <div class="panel"><div class="panel-h"><h3>HOTO-month cohorts</h3><span class="hint">progression of each intake cohort — click any cell</span></div>
+      <div class="panel-b flush"><div class="tbl-wrap"><table id="cohortTbl"></table></div></div></div>
+  </div>
+
+  <div class="view" id="v-projects">
+    <div class="panel"><div class="panel-h"><h3>All projects</h3>
+      <input id="projSearch" placeholder="Search project / lead / city…" style="font:inherit;font-size:13px;padding:7px 11px;border:1px solid var(--line-2);border-radius:8px;width:240px"></div>
+      <div class="panel-b flush"><div class="tbl-wrap"><table id="projTbl"></table></div></div></div>
+  </div>
+
+  <div class="view" id="v-team"><div class="kpis" id="teamKpis"></div>
+    <div class="grid g-2">
+      <div class="panel"><div class="panel-h"><h3>DEV availability</h3></div><div class="panel-b flush"><div class="tbl-wrap"><table id="attTbl"></table></div></div></div>
+      <div class="panel"><div class="panel-h"><h3>Designer roster &amp; load</h3><span class="hint">internal (DE) · external (ODE)</span></div><div class="panel-b" id="dsnLoad"></div></div>
+    </div></div>
 </div>
 
 <div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-h"><div><h3 id="mTitle" style="font-size:16px"></h3><div id="mSub" class="mono" style="font-size:12px;color:#9FB3C8;margin-top:3px"></div></div><span class="x" onclick="closeModal()">×</span></div>
-    <div class="modal-b" id="mBody"></div>
-  </div>
+  <div class="modal"><div class="modal-h"><div><h3 id="mTitle" style="font-size:16px"></h3><div id="mSub" class="mono" style="font-size:12px;color:#9FB3C8;margin-top:3px"></div></div><span class="x" onclick="closeModal()">×</span></div>
+  <div class="modal-b" id="mBody"></div></div>
 </div>
 
 <script>
-/* ============================================================
-   CONFIG — connect your live sheets here.
-   Publish the spreadsheet (File ▸ Share ▸ Publish to web ▸ CSV)
-   OR set sharing to "Anyone with link · Viewer", then these
-   export URLs return CSV directly.
-   ============================================================ */
-const SHEET_ID = "1g6vGbVMAaLKnJI06F-xKVskKcE862EelVC_CKSH7U6c";
-const CSV = gid => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
-const SOURCES = {
-  master:     CSV("1484820577"),
-  design:     CSV("392178120"),
-  attendance: CSV("1387164875"),
-  checkinout: CSV("854609223"),
-};
-const ONSITE_KM = 0.5;            // within this = "on-site", beyond = flagged
-const TODAY = new Date("2026-06-26");
+/* ====== CONFIG ====== */
+const SHEET_ID="1g6vGbVMAaLKnJI06F-xKVskKcE862EelVC_CKSH7U6c";
+const CSV=g=>`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${g}`;
+const SOURCES={master:CSV("1484820577"),design:CSV("392178120"),attendance:CSV("1387164875"),checkinout:CSV("854609223"),users:CSV("76549870")};
+const ONSITE_KM=0.5, TODAY=new Date("2026-06-26");
+const SLA={first:{Alpha:{dev:1,design:2},Beta:{dev:2,design:5},Gamma:{dev:3,design:8},Omega:{dev:0,design:0}},
+           revision:{Alpha:{dev:1,design:3},Beta:{dev:1,design:6},Gamma:{dev:2,design:9},Omega:{dev:0,design:0}}};
+const catFromCap=k=>k<=30?"Alpha":k<=100?"Beta":k<200?"Gamma":"Omega";
 
-/* ---- SLA matrix (days). 0 = open / manual review ---- */
-const SLA = {
-  first:    { Alpha:{dev:1,design:2}, Beta:{dev:2,design:5}, Gamma:{dev:3,design:8}, Omega:{dev:0,design:0} },
-  revision: { Alpha:{dev:1,design:3}, Beta:{dev:1,design:6}, Gamma:{dev:2,design:9}, Omega:{dev:0,design:0} },
-};
-function catFromCapacity(kwp){ if(kwp<=30)return"Alpha"; if(kwp<=100)return"Beta"; if(kwp<200)return"Gamma"; return"Omega"; }
-
-/* ============================================================
-   SAMPLE DATA — mirrors the real sheet logic so the page works
-   before you connect. Replaced entirely once live data loads.
-   ============================================================ */
-const SAMPLE = {
-  // grouped leads (master). Each lead = original + optional revisions
-  leads:[
-    {id:"SSE_FOS46065PunFOS_47331", project:"Kothrud Residency", city:"Pune", addr:"Kothrud, Pune", lat:18.507, lng:73.807,
-     capacity:24, devReq:"No", scenario:"first",
-     dev:null,
-     design:{type:"Internal",designer:"Rohit Pawar",assigned:"2026-06-10",completed:"2026-06-11",revisions:0,status:"Completed",finalCap:24,instType:"Rooftop"} },
-
-    {id:"SSE_FOS46065PunFOS_47332", project:"Hinjewadi Tech Park", city:"Pune", addr:"Hinjewadi Ph 2", lat:18.591, lng:73.738,
-     capacity:78, devReq:"Yes", scenario:"first",
-     dev:{devName:"Amit Sane",permission:"2026-06-05",blocks:[
-        {sched:"2026-06-06",connected:"Rescheduled",ts:"",lat:null,lng:null},
-        {sched:"2026-06-07",connected:"Completed",ts:"2026-06-07 11:20",lat:18.592,lng:73.740}],
-        finalStatus:"Completed"},
-     design:{type:"External",designer:"Vendor — GreenCAD",assigned:"2026-06-08",completed:"2026-06-13",revisions:1,status:"Completed",finalCap:80,instType:"Rooftop"} },
-
-    {id:"SSE_RBD45818DelRef_62219", project:"Karol Bagh Mall", city:"Delhi", addr:"Karol Bagh", lat:28.651, lng:77.190,
-     capacity:165, devReq:"Yes", scenario:"first",
-     dev:{devName:"Sunil Yadav",permission:"2026-06-02",blocks:[
-        {sched:"2026-06-03",connected:"Completed",ts:"2026-06-03 09:55",lat:28.659,lng:77.205}],
-        finalStatus:"Completed"},
-     design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-04",completed:"2026-06-15",revisions:2,status:"Completed",finalCap:170,instType:"Ground mount"} },
-
-    {id:"SSE_MUM44120MumBan_55870", project:"Andheri Logistics", city:"Mumbai", addr:"Andheri East", lat:19.119, lng:72.869,
-     capacity:240, devReq:"Yes", scenario:"first",
-     dev:{devName:"Pankaj Rao",permission:"2026-06-01",blocks:[
-        {sched:"2026-06-02",connected:"Rescheduled",ts:"",lat:null,lng:null},
-        {sched:"2026-06-04",connected:"Rescheduled",ts:"",lat:null,lng:null},
-        {sched:"2026-06-06",connected:"Completed",ts:"2026-06-06 14:10",lat:19.150,lng:72.910}],
-        finalStatus:"Completed"},
-     design:{type:"External",designer:"Vendor — SolDesign",assigned:"2026-06-07",completed:"",revisions:0,status:"Pending",finalCap:240,instType:"Rooftop"} },
-
-    {id:"SSE_FOS46070PunFOS_47340", project:"Wakad Heights", city:"Pune", addr:"Wakad", lat:18.598, lng:73.762,
-     capacity:55, devReq:"No", scenario:"first",
-     dev:null,
-     design:{type:"Internal",designer:"Rohit Pawar",assigned:"2026-06-12",completed:"2026-06-16",revisions:0,status:"Completed",finalCap:55,instType:"Rooftop"} },
-
-    {id:"SSE_DEL45820DelRef_62230", project:"Saket Plaza", city:"Delhi", addr:"Saket", lat:28.522, lng:77.210,
-     capacity:18, devReq:"No", scenario:"first",
-     dev:null,
-     design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-18",completed:"2026-06-19",revisions:0,status:"Completed",finalCap:18,instType:"Rooftop"} },
-
-    {id:"SSE_MUM44130MumBan_55880", project:"Powai Plot — survey", city:"Mumbai", addr:"Powai", lat:19.117, lng:72.905,
-     capacity:120, devReq:"Yes", scenario:"first",
-     dev:{devName:"Pankaj Rao",permission:"2026-06-14",blocks:[
-        {sched:"2026-06-16",connected:"Cancelled",ts:"",lat:null,lng:null}],
-        finalStatus:"Cancelled"},
-     design:{type:"Internal",designer:"—",assigned:"",completed:"",revisions:0,status:"Cancelled",finalCap:0,instType:"Area not fit for solar"} },
-
-    {id:"SSE_FOS46075PunFOS_47350", project:"Baner Offices", city:"Pune", addr:"Baner", lat:18.559, lng:73.776,
-     capacity:95, devReq:"Yes", scenario:"first",
-     dev:{devName:"Amit Sane",permission:"2026-06-19",blocks:[
-        {sched:"2026-06-20",connected:"Completed",ts:"2026-06-20 10:05",lat:18.560,lng:73.778}],
-        finalStatus:"Completed"},
-     design:{type:"External",designer:"Vendor — GreenCAD",assigned:"2026-06-21",completed:"",revisions:0,status:"Pending",finalCap:95,instType:"Rooftop"} },
-
-    {id:"SSE_DEL45830DelRef_62240", project:"Dwarka Sector 12", city:"Delhi", addr:"Dwarka", lat:28.592, lng:77.046,
-     capacity:42, devReq:"No", scenario:"first",
-     dev:null,
-     design:{type:"Internal",designer:"Karan Mehta",assigned:"2026-06-22",completed:"2026-06-26",revisions:1,status:"Completed",finalCap:44,instType:"Rooftop"} },
-
-    {id:"SSE_MUM44140MumBan_55890", project:"Vashi Commercial", city:"Mumbai", addr:"Vashi", lat:19.077, lng:73.000,
-     capacity:28, devReq:"No", scenario:"first",
-     dev:null,
-     design:{type:"External",designer:"Vendor — SolDesign",assigned:"2026-06-23",completed:"2026-06-26",revisions:0,status:"Completed",finalCap:28,instType:"Rooftop"} },
-  ],
-  attendance:[
-    {id:"DEV01",name:"Amit Sane",present:"Present",avail:"Available",assigned:2,approval:"Approved"},
-    {id:"DEV02",name:"Sunil Yadav",present:"Present",avail:"Available",assigned:1,approval:"Approved"},
-    {id:"DEV03",name:"Pankaj Rao",present:"Present",avail:"On site",assigned:3,approval:"Approved"},
-    {id:"DEV04",name:"Ravi Kumar",present:"Leave",avail:"Unavailable",assigned:0,approval:"Approved"},
-  ],
+/* ====== SAMPLE DATA ====== */
+const SAMPLE={leads:[
+ {id:"SSE_FOS46065PunFOS_47331",project:"Kothrud Residency",city:"Pune",addr:"Kothrud, Pune",lat:18.507,lng:73.807,capacity:24,devReq:"No",hoto:"2026-06-08",received:"2026-06-07",dev:null,design:{type:"Internal",designer:"Rohit Pawar",assigned:"2026-06-10",completed:"2026-06-11",revisions:0,status:"Completed",finalCap:24,instType:"Rooftop"}},
+ {id:"SSE_FOS46065PunFOS_47332",project:"Hinjewadi Tech Park",city:"Pune",addr:"Hinjewadi Ph 2",lat:18.591,lng:73.738,capacity:78,devReq:"Yes",hoto:"2026-06-03",received:"2026-06-02",dev:{devName:"Amit Sane",permission:"2026-06-05",blocks:[{sched:"2026-06-06",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-07",connected:"Completed",ts:"2026-06-07 11:20",lat:18.592,lng:73.740}],finalStatus:"Completed"},design:{type:"External",designer:"Vendor — GreenCAD",assigned:"2026-06-08",completed:"2026-06-13",revisions:1,status:"Completed",finalCap:80,instType:"Rooftop"}},
+ {id:"SSE_RBD45818DelRef_62219",project:"Karol Bagh Mall",city:"Delhi",addr:"Karol Bagh",lat:28.651,lng:77.190,capacity:165,devReq:"Yes",hoto:"2026-06-01",received:"2026-05-31",dev:{devName:"Sunil Yadav",permission:"2026-06-02",blocks:[{sched:"2026-06-03",connected:"Completed",ts:"2026-06-03 09:55",lat:28.659,lng:77.205}],finalStatus:"Completed"},design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-04",completed:"2026-06-15",revisions:2,status:"Completed",finalCap:170,instType:"Ground mount",holdStart:"2026-06-08",holdEnd:"2026-06-11",holdReason:"Awaiting client roof access"}},
+ {id:"SSE_MUM44120MumBan_55870",project:"Andheri Logistics",city:"Mumbai",addr:"Andheri East",lat:19.119,lng:72.869,capacity:240,devReq:"Yes",hoto:"2026-05-30",received:"2026-05-29",dev:{devName:"Pankaj Rao",permission:"2026-06-01",blocks:[{sched:"2026-06-02",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-04",connected:"Rescheduled",ts:"",lat:null,lng:null},{sched:"2026-06-06",connected:"Completed",ts:"2026-06-06 14:10",lat:19.150,lng:72.910}],finalStatus:"Completed",holdStart:"2026-06-03",holdEnd:"2026-06-04",holdReason:"DEV reassignment"},design:{type:"External",designer:"Vendor — SolDesign",assigned:"2026-06-07",completed:"",revisions:0,status:"Pending",finalCap:240,instType:"Rooftop"}},
+ {id:"SSE_FOS46070PunFOS_47340",project:"Wakad Heights",city:"Pune",addr:"Wakad",lat:18.598,lng:73.762,capacity:55,devReq:"No",hoto:"2026-06-10",received:"2026-06-09",dev:null,design:{type:"Internal",designer:"Rohit Pawar",assigned:"2026-06-12",completed:"2026-06-16",revisions:0,status:"Completed",finalCap:55,instType:"Rooftop"}},
+ {id:"SSE_DEL45820DelRef_62230",project:"Saket Plaza",city:"Delhi",addr:"Saket",lat:28.522,lng:77.210,capacity:18,devReq:"No",hoto:"2026-06-17",received:"2026-06-16",dev:null,design:{type:"Internal",designer:"Meena Joshi",assigned:"2026-06-18",completed:"2026-06-19",revisions:0,status:"Completed",finalCap:18,instType:"Rooftop"}},
+ {id:"SSE_MUM44130MumBan_55880",project:"Powai Plot — survey",city:"Mumbai",addr:"Powai",lat:19.117,lng:72.905,capacity:120,devReq:"Yes",hoto:"2026-06-12",received:"2026-06-11",dev:{devName:"Pankaj Rao",permission:"2026-06-14",blocks:[{sched:"2026-06-16",connected:"Cancelled",ts:"",lat:null,lng:null}],finalStatus:"Cancelled"},design:{type:"Internal",designer:"—",assigned:"",completed:"",revisions:0,status:"Cancelled",finalCap:0,instType:"Area not fit for solar",cancelReason:"Rooftop shading > 60% — area not fit for solar"}},
+ {id:"SSE_FOS46075PunFOS_47350",project:"Baner Offices",city:"Pune",addr:"Baner",lat:18.559,lng:73.776,capacity:95,devReq:"Yes",hoto:"2026-06-18",received:"2026-06-17",dev:{devName:"Amit Sane",permission:"2026-06-19",blocks:[{sched:"2026-06-20",connected:"Completed",ts:"2026-06-20 10:05",lat:18.560,lng:73.778}],finalStatus:"Completed"},design:{type:"External",designer:"Vendor — GreenCAD",assigned:"2026-06-21",completed:"",revisions:0,status:"Pending",finalCap:95,instType:"Rooftop"}},
+ {id:"SSE_DEL45830DelRef_62240",project:"Dwarka Sector 12",city:"Delhi",addr:"Dwarka",lat:28.592,lng:77.046,capacity:42,devReq:"No",hoto:"2026-05-20",received:"2026-05-19",dev:null,design:{type:"Internal",designer:"Karan Mehta",assigned:"2026-05-22",completed:"2026-05-26",revisions:1,status:"Completed",finalCap:44,instType:"Rooftop"}},
+ {id:"SSE_MUM44140MumBan_55890",project:"Vashi Commercial",city:"Mumbai",addr:"Vashi",lat:19.077,lng:73.000,capacity:28,devReq:"No",hoto:"2026-05-22",received:"2026-05-21",dev:null,design:{type:"External",designer:"Vendor — SolDesign",assigned:"2026-05-24",completed:"2026-05-27",revisions:0,status:"Completed",finalCap:28,instType:"Rooftop"}},
+ {id:"SSE_FOS46080PunFOS_47360",project:"Pimpri Warehouse",city:"Pune",addr:"Pimpri",lat:18.628,lng:73.800,capacity:140,devReq:"Yes",hoto:"2026-06-20",received:"2026-06-19",dev:{devName:"Amit Sane",permission:"2026-06-21",blocks:[{sched:"2026-06-23",connected:"Completed",ts:"2026-06-23 09:30",lat:18.629,lng:73.802}],finalStatus:"Completed"},design:{type:"Internal",designer:"Karan Mehta",assigned:"2026-06-24",completed:"",revisions:0,status:"Pending",finalCap:140,instType:"Rooftop"}},
+ {id:"SSE_DEL45840DelRef_62250",project:"Rohini Complex",city:"Delhi",addr:"Rohini",lat:28.743,lng:77.067,capacity:65,devReq:"",hoto:"2026-06-22",received:"2026-06-21",dev:null,design:{type:"Internal",designer:"—",assigned:"",completed:"",revisions:0,status:"Pending",finalCap:65,instType:"Rooftop"}},
+],
+attendance:[{name:"Amit Sane",present:"Present",avail:"Available"},{name:"Sunil Yadav",present:"Present",avail:"Available"},{name:"Pankaj Rao",present:"Present",avail:"On site"},{name:"Ravi Kumar",present:"Leave",avail:"Unavailable"}],
+users:[{id:"DEV01",name:"Amit Sane",role:"DEV",city:"Pune"},{id:"DEV02",name:"Sunil Yadav",role:"DEV",city:"Delhi"},{id:"DEV03",name:"Pankaj Rao",role:"DEV",city:"Mumbai"},{id:"DEV04",name:"Ravi Kumar",role:"DEV",city:"Pune"},{id:"DEV05",name:"Imran Shaikh",role:"DEV",city:"Mumbai"},{id:"DE01",name:"Rohit Pawar",role:"DE",city:"Pune"},{id:"DE02",name:"Meena Joshi",role:"DE",city:"Delhi"},{id:"DE03",name:"Karan Mehta",role:"DE",city:"Delhi"},{id:"DE04",name:"Sneha Iyer",role:"DE",city:"Mumbai"},{id:"ODE01",name:"Vendor — GreenCAD",role:"ODE",city:"Pune"},{id:"ODE02",name:"Vendor — SolDesign",role:"ODE",city:"Mumbai"},{id:"ODE03",name:"Vendor — RayWorks",role:"ODE",city:"Delhi"}],
 };
 
-/* ============================================================  helpers  */
-function dayDiff(a,b){ if(!a||!b)return null; const d=(new Date(b)-new Date(a))/86400000; return Math.round(d*10)/10; }
-function haversine(la1,lo1,la2,lo2){ if([la1,lo1,la2,lo2].some(v=>v==null))return null;
-  const R=6371,toR=x=>x*Math.PI/180, dla=toR(la2-la1),dlo=toR(lo2-lo1);
-  const x=Math.sin(dla/2)**2+Math.cos(toR(la1))*Math.cos(toR(la2))*Math.sin(dlo/2)**2;
-  return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))*100)/100; }
-function fmt(n){ return n==null?"—":n; }
+/* ====== helpers ====== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function dayDiff(a,b){if(!a||!b)return null;return Math.round((new Date(b)-new Date(a))/86400000*10)/10;}
+function haversine(a,b,c,d){if([a,b,c,d].some(v=>v==null))return null;const R=6371,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b);const x=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))*100)/100;}
+const fmt=n=>n==null?"—":n;
+const monthKey=d=>d?d.slice(0,7):null;
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const monthLbl=k=>k?MN[+k.slice(5,7)-1]+" "+k.slice(0,4):"—";
 
-/* derive everything the views need from a lead */
 function enrich(L){
-  L.cat = catFromCapacity(L.capacity);
-  // DEV: effective block = last filled
-  if(L.dev){
-    const b=L.dev.blocks, eff=b[b.length-1];
-    L.dev.effective=eff;
+  L.cat=catFromCap(L.capacity);
+  L.devReqState=L.devReq==="Yes"?"Required":L.devReq==="No"?"Not required":"Not assigned";
+  if(L.dev){const b=L.dev.blocks,eff=b[b.length-1];L.dev.effective=eff;
     L.dev.reschedules=b.filter(x=>x.connected==="Rescheduled").length;
-    L.dev.completedDate=eff.ts? eff.ts.split(" ")[0] : null;
-    L.dev.devTat=dayDiff(L.dev.permission, L.dev.completedDate);
+    L.dev.completedDate=eff.ts?eff.ts.split(" ")[0]:null;
+    const gross=dayDiff(L.dev.permission,L.dev.completedDate);
+    L.dev.holdDays=(L.dev.holdStart&&L.dev.holdEnd)?Math.max(0,dayDiff(L.dev.holdStart,L.dev.holdEnd)):0;
+    L.dev.grossTat=gross;
+    L.dev.devTat=gross==null?null:Math.round((gross-L.dev.holdDays)*10)/10;
     L.dev.distKm=haversine(L.lat,L.lng,eff.lat,eff.lng);
-    L.dev.onsite = L.dev.distKm==null? null : L.dev.distKm<=ONSITE_KM;
-  }
-  // Design status/TAT
+    L.dev.onsite=L.dev.distKm==null?null:L.dev.distKm<=ONSITE_KM;}
   const d=L.design;
-  d.designTat = dayDiff(d.assigned,d.completed);
-  d.scenario = d.revisions>0 ? "revision":"first";
-  const tgt = SLA[L.scenario][L.cat];
-  d.target = tgt.design;
-  d.slaState = (d.status!=="Completed")? "—"
-    : tgt.design===0 ? "Manual"
-    : d.designTat==null ? "—"
-    : d.designTat<=tgt.design ? "On time":"Delayed";
-  d.variance = (tgt.design && d.designTat!=null)? Math.round((d.designTat-tgt.design)*10)/10 : null;
+  const grossD=dayDiff(d.assigned,d.completed);
+  d.holdDays=(d.holdStart&&d.holdEnd)?Math.max(0,dayDiff(d.holdStart,d.holdEnd)):0;
+  d.grossTat=grossD;
+  d.designTat=grossD==null?null:Math.round((grossD-d.holdDays)*10)/10;
+  d.scenario=d.revisions>0?"revision":"first";
+  d.target=SLA.first[L.cat].design;
+  d.slaState=d.status!=="Completed"?"—":d.target===0?"Manual":d.designTat==null?"—":d.designTat<=d.target?"On time":"Delayed";
+  d.variance=(d.target&&d.designTat!=null)?Math.round((d.designTat-d.target)*10)/10:null;
+  d.assignedTo=(d.designer&&d.designer!=="—")?d.designer:null;
+  if(d.status==="Pending"&&d.assigned)d.ageDays=Math.round(dayDiff(d.assigned,TODAY.toISOString().slice(0,10)));
+  else if(d.status==="Pending")d.ageDays=Math.round(dayDiff(L.hoto,TODAY.toISOString().slice(0,10)));
+  else d.ageDays=null;
   return L;
 }
-
-let DATA = JSON.parse(JSON.stringify(SAMPLE));
+let DATA=JSON.parse(JSON.stringify(SAMPLE));
 DATA.leads.forEach(enrich);
 
-/* ============================================================  RENDER  */
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-
-function kpiCard(lbl,val,sub,accent){return `<div class="kpi" style="--accent:${accent}"><div class="lbl">${lbl}</div><div class="val">${val}</div>${sub?`<div class="sub">${sub}</div>`:""}</div>`;}
-function bar(label,val,max,color){const w=max?Math.max(4,val/max*100):0;
-  return `<div class="bar-row"><span>${label}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${color}">${val}</div></div><span class="muted">${max?Math.round(val/max*100)+'%':''}</span></div>`;}
-
-function renderOverview(){
-  const L=DATA.leads;
-  const completed=L.filter(x=>x.design.status==="Completed").length;
-  const pending=L.filter(x=>x.design.status==="Pending").length;
-  const cancelled=L.filter(x=>x.design.status==="Cancelled").length;
-  const devDone=L.filter(x=>x.dev&&x.dev.finalStatus==="Completed").length;
-  const slaCompleted=L.filter(x=>x.design.slaState==="On time"||x.design.slaState==="Delayed");
-  const onTime=slaCompleted.filter(x=>x.design.slaState==="On time").length;
-  const slaPct = slaCompleted.length? Math.round(onTime/slaCompleted.length*100):0;
-  $("#kpis").innerHTML =
-    kpiCard("Total leads",L.length,`${devDone} DEV completed`,"var(--solar)")+
-    kpiCard("Designs completed",completed,`${pending} pending · ${cancelled} cancelled`,"var(--green)")+
-    kpiCard("SLA on-time",slaPct+"<small>%</small>",`${onTime}/${slaCompleted.length} measurable`,"var(--blue)")+
-    kpiCard("Avg design TAT",avgTat(L)+"<small> d</small>","completed designs","var(--teal)");
-
-  // stages
-  const stages={"DEV completed":devDone,"Design pending":pending,"Design completed":completed,"Cancelled":cancelled};
-  const mx=Math.max(...Object.values(stages));
-  const colors=["var(--solar)","var(--amber)","var(--green)","var(--red)"];
-  $("#stageBars").innerHTML=Object.entries(stages).map(([k,v],i)=>bar(k,v,mx,colors[i])).join("");
-
-  // categories
-  const cats={Alpha:0,Beta:0,Gamma:0,Omega:0}; L.forEach(x=>cats[x.cat]++);
-  const cmx=Math.max(...Object.values(cats));
-  const ccol={Alpha:"var(--alpha)",Beta:"var(--beta)",Gamma:"var(--gamma)",Omega:"var(--omega)"};
-  $("#catBars").innerHTML=Object.entries(cats).map(([k,v])=>bar(k,v,cmx,ccol[k])).join("");
-
-  // SLA summary
-  $("#slaSummary").innerHTML=
-    `<div class="cmp" style="grid-template-columns:repeat(3,1fr)">
-      ${slaMini("On time",onTime,"var(--green)")}
-      ${slaMini("Delayed",slaCompleted.length-onTime,"var(--red)")}
-      ${slaMini("Manual review (Omega/MMS)",L.filter(x=>x.design.slaState==="Manual").length,"var(--omega)")}
-    </div>`;
-}
-function slaMini(l,v,c){return `<div class="cmp-card" style="text-align:center"><div class="disp" style="font-size:34px;font-weight:700;color:${c}">${v}</div><div class="muted" style="margin-top:4px">${l}</div></div>`;}
-function avgTat(L){const t=L.filter(x=>x.design.status==="Completed"&&x.design.designTat!=null).map(x=>x.design.designTat);return t.length?(t.reduce((a,b)=>a+b,0)/t.length).toFixed(1):"—";}
-
-/* ---- MAP ---- */
-let map, markerLayer, mapMode="city";
-const CITY_COL={Pune:"#2563C9",Delhi:"#D97706",Mumbai:"#0E9488"};
-const DEV_COL={Completed:"#16A34A",Rescheduled:"#D97706",Cancelled:"#DC2626",None:"#94A3B8"};
-const CAT_COL={Alpha:"#2563C9",Beta:"#0E9488",Gamma:"#D97706",Omega:"#9333EA"};
-function colorFor(L){ if(mapMode==="city")return CITY_COL[L.city]||"#94A3B8";
-  if(mapMode==="cat")return CAT_COL[L.cat];
-  return DEV_COL[L.dev?L.dev.finalStatus:"None"]; }
-function dot(c){return L.divIcon({className:"",html:`<div style="width:15px;height:15px;border-radius:50%;background:${c};border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,iconSize:[15,15],iconAnchor:[7,7]});}
-function initMap(){
-  if(map)return;
-  map=L.map("map",{scrollWheelZoom:false}).setView([20.5,75],5);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap, © CARTO",maxZoom:19}).addTo(map);
-  markerLayer=L.layerGroup().addTo(map);
-  drawMarkers();
-}
-function drawMarkers(){
-  markerLayer.clearLayers();
-  const pts=[];
-  DATA.leads.forEach(L=>{
-    const m=window.L.marker([L.lat,L.lng],{icon:dot(colorFor(L))});
-    let devHtml="No DEV required";
-    if(L.dev){
-      const e=L.dev.effective;
-      const dl=L.dev.distKm==null?"":(L.dev.onsite?`<span style="color:#16A34A">on-site (${L.dev.distKm} km)</span>`:`<span style="color:#DC2626">${L.dev.distKm} km from site</span>`);
-      devHtml=`DEV: <b>${L.dev.finalStatus}</b> · ${L.dev.devName}<br>${L.dev.reschedules} reschedule(s) · ${dl}`;
-    }
-    m.bindPopup(`<div style="font-family:Inter;font-size:13px;min-width:200px"><b style="font-size:14px">${L.project}</b><br><span style="color:#5A6B7E">${L.id}</span><hr style="border:none;border-top:1px solid #E2E8F0;margin:7px 0">${L.city} · ${L.capacity} kWp · <b>${L.cat}</b><br>${devHtml}<br>Design: <b>${L.design.status}</b> (${L.design.type})</div>`);
-    m.addTo(markerLayer); pts.push([L.lat,L.lng]);
-    if(L.dev&&L.dev.effective.lat){ // completed DEV point if off-site
-      if(!L.dev.onsite){
-        const dm=window.L.circleMarker([L.dev.effective.lat,L.dev.effective.lng],{radius:6,color:"#DC2626",weight:2,fillColor:"#FCE7E7",fillOpacity:.8});
-        dm.bindPopup(`<b>DEV completed here</b><br>${L.dev.distKm} km from project site`); dm.addTo(markerLayer);
-        window.L.polyline([[L.lat,L.lng],[L.dev.effective.lat,L.dev.effective.lng]],{color:"#DC2626",weight:1.5,dashArray:"4 4"}).addTo(markerLayer);
-      }
-    }
+/* ====== FILTERS ====== */
+const FILTERS={hoto:[],city:[],cat:[],devStatus:[],dsnStatus:[],assigned:[],designer:[],type:[]};
+const FDEF=[
+ {key:"hoto",label:"HOTO month",get:l=>[...new Set(l.map(x=>monthKey(x.hoto)))].filter(Boolean).sort(),disp:monthLbl,match:(x,v)=>v.includes(monthKey(x.hoto))},
+ {key:"city",label:"City",get:l=>[...new Set(l.map(x=>x.city))].sort(),disp:v=>v,match:(x,v)=>v.includes(x.city)},
+ {key:"cat",label:"Size",get:()=>["Alpha","Beta","Gamma","Omega"],disp:v=>v,match:(x,v)=>v.includes(x.cat)},
+ {key:"devStatus",label:"DEV status",get:()=>["Required","Not required","Not assigned","DEV completed","DEV pending","DEV cancelled"],disp:v=>v,match:(x,v)=>{
+    return v.some(s=>{
+      if(s==="Required")return x.devReqState==="Required"; if(s==="Not required")return x.devReqState==="Not required"; if(s==="Not assigned")return x.devReqState==="Not assigned";
+      if(s==="DEV completed")return x.dev&&x.dev.finalStatus==="Completed"; if(s==="DEV pending")return x.dev&&!["Completed","Cancelled"].includes(x.dev.finalStatus); if(s==="DEV cancelled")return x.dev&&x.dev.finalStatus==="Cancelled";});}},
+ {key:"dsnStatus",label:"Design status",get:()=>["Completed","Pending","Cancelled"],disp:v=>v,match:(x,v)=>v.includes(x.design.status)},
+ {key:"assigned",label:"Assignment",get:()=>["Assigned","Not assigned"],disp:v=>v,match:(x,v)=>v.some(s=>s==="Assigned"?!!x.design.assignedTo:!x.design.assignedTo)},
+ {key:"designer",label:"Designer",get:l=>[...new Set(l.map(x=>x.design.assignedTo).filter(Boolean))].sort(),disp:v=>v,match:(x,v)=>v.includes(x.design.assignedTo)},
+ {key:"type",label:"Int / Ext",get:()=>["Internal","External"],disp:v=>v,match:(x,v)=>v.includes(x.design.type)},
+];
+function buildFilters(){
+  const bar=$("#fbar"); $$(".ms",bar).forEach(e=>e.remove());
+  const clear=$(".fclear");
+  FDEF.forEach(f=>{
+    const opts=f.get(DATA.leads);
+    const ms=document.createElement("div");ms.className="ms";
+    ms.innerHTML=`<button class="ms-btn" data-k="${f.key}">${f.label}<span class="cnt" style="display:none"></span> ▾</button>
+      <div class="ms-pop"><input class="search" placeholder="Search…"><div class="ms-opts"></div></div>`;
+    bar.insertBefore(ms,clear);
+    const optsBox=ms.querySelector(".ms-opts");
+    optsBox.innerHTML=opts.map(o=>`<label class="ms-opt"><input type="checkbox" value="${o}"> ${f.disp(o)}</label>`).join("")||'<div class="muted" style="padding:6px;font-size:12px">none</div>';
+    ms.querySelector(".ms-btn").onclick=e=>{e.stopPropagation();const p=ms.querySelector(".ms-pop");const open=p.classList.contains("open");$$(".ms-pop").forEach(x=>x.classList.remove("open"));if(!open)p.classList.add("open");};
+    ms.querySelector(".search").oninput=e=>{const q=e.target.value.toLowerCase();$$(".ms-opt",optsBox).forEach(o=>o.style.display=o.textContent.toLowerCase().includes(q)?"":"none");};
+    optsBox.onchange=()=>{FILTERS[f.key]=[...optsBox.querySelectorAll("input:checked")].map(i=>i.value);
+      const c=ms.querySelector(".cnt");c.style.display=FILTERS[f.key].length?"inline-block":"none";c.textContent=FILTERS[f.key].length;renderAll();};
   });
-  if(pts.length)map.fitBounds(pts,{padding:[40,40]});
-  renderLegend();
 }
-function renderLegend(){
-  let items;
-  if(mapMode==="city")items=Object.entries(CITY_COL);
-  else if(mapMode==="cat")items=Object.entries(CAT_COL);
-  else items=Object.entries(DEV_COL);
-  $("#mapLegend").innerHTML=items.map(([k,c])=>`<span class="it"><span class="sw" style="background:${c}"></span>${k}</span>`).join("")
-    +`<span class="it" style="margin-left:auto;color:#DC2626"><span class="sw" style="background:#FCE7E7;border-color:#DC2626"></span>Off-site DEV point</span>`;
+document.addEventListener("click",()=>$$(".ms-pop").forEach(x=>x.classList.remove("open")));
+function clearFilters(){Object.keys(FILTERS).forEach(k=>FILTERS[k]=[]);$$(".ms-opts input").forEach(i=>i.checked=false);$$(".ms-btn .cnt").forEach(c=>c.style.display="none");renderAll();}
+function filtered(){return DATA.leads.filter(L=>FDEF.every(f=>!FILTERS[f.key].length||f.match(L,FILTERS[f.key])));}
+
+/* ====== render building blocks ====== */
+function kpi(lbl,val,sub,accent,onClick){return `<div class="kpi ${onClick?'':'static'}" style="--accent:${accent}" ${onClick?`onclick="${onClick}"`:''}><div class="lbl">${lbl}</div><div class="val">${val}</div>${sub?`<div class="sub">${sub}</div>`:""}</div>`;}
+function barRow(label,val,max,color,onClick){const w=max?Math.max(4,val/max*100):0;return `<div class="bar-row" ${onClick?`onclick="${onClick}"`:''}><span>${label}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${color}">${val}</div></div><span class="muted">${max?Math.round(val/max*100)+'%':''}</span></div>`;}
+function statusPill(s){const m={Completed:"p-green",Rescheduled:"p-amber",Cancelled:"p-red",Pending:"p-blue","On time":"p-green",Delayed:"p-red","—":"p-gray"};return `<span class="pill ${m[s]||'p-gray'}"><span class="d"></span>${s}</span>`;}
+function avgOf(arr){return arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1):"—";}
+
+/* ====== OVERVIEW ====== */
+function renderOverview(){
+  const L=filtered();
+  const devDone=L.filter(x=>x.dev&&x.dev.finalStatus==="Completed").length;
+  const dsnDone=L.filter(x=>x.design.status==="Completed").length;
+  const devTats=L.filter(x=>x.dev&&x.dev.devTat!=null).map(x=>x.dev.devTat);
+  const dsnTats=L.filter(x=>x.design.status==="Completed"&&x.design.designTat!=null).map(x=>x.design.designTat);
+  $("#ovKpis").innerHTML=
+    kpi("Unique leads",L.length,"received","var(--solar)",`drill('city','All leads')`)+
+    kpi("DEV completed",devDone,`avg TAT ${avgOf(devTats)} d`,"var(--blue)",`drill('city','DEV completed','devDone')`)+
+    kpi("Design completed",dsnDone,`avg TAT ${avgOf(dsnTats)} d`,"var(--green)",`drill('city','Design completed','dsnDone')`)+
+    kpi("Design pending",L.filter(x=>x.design.status==="Pending").length,"open","var(--amber)",`go('pending')`);
+  // by month (received)
+  const mk=k=>monthKey(k);
+  const months=[...new Set(L.map(x=>mk(x.hoto)).filter(Boolean))].sort();
+  const grpM=m=>({lead:L.filter(x=>mk(x.received)===m).length,dev:L.filter(x=>mk(x.dev?.completedDate)===m).length,dsn:L.filter(x=>mk(x.design.completed)===m).length});
+  const allMonths=[...new Set(L.flatMap(x=>[mk(x.received),mk(x.dev?.completedDate),mk(x.design.completed)]).filter(Boolean))].sort();
+  let mx=1;allMonths.forEach(m=>{const g=grpM(m);mx=Math.max(mx,g.lead,g.dev,g.dsn);});
+  $("#byMonth").innerHTML=allMonths.map(m=>{const g=grpM(m);
+    return `<div style="margin-bottom:13px"><div style="font-size:12px;font-weight:600;margin-bottom:5px">${monthLbl(m)}</div>
+      ${barRow("Leads",g.lead,mx,"var(--solar)",`drillMonth('${m}','received')`)}
+      ${barRow("DEV done",g.dev,mx,"var(--blue)",`drillMonth('${m}','dev')`)}
+      ${barRow("Design done",g.dsn,mx,"var(--green)",`drillMonth('${m}','dsn')`)}</div>`;}).join("")||'<div class="muted">No data.</div>';
+  // by HOTO month
+  const hmx=Math.max(1,...months.map(m=>L.filter(x=>mk(x.hoto)===m).length));
+  $("#byHoto").innerHTML=months.map(m=>barRow(monthLbl(m),L.filter(x=>mk(x.hoto)===m).length,hmx,"var(--teal)",`drillHoto('${m}')`)).join("")||'<div class="muted">No data.</div>';
+  // by city
+  const cities=[...new Set(L.map(x=>x.city))];
+  const cmx=Math.max(1,...cities.map(c=>L.filter(x=>x.city===c).length));
+  $("#byCity").innerHTML=cities.map(c=>barRow(c,L.filter(x=>x.city===c).length,cmx,"var(--blue)",`drillCity('${c}')`)).join("");
+  // by cat
+  const cats=["Alpha","Beta","Gamma","Omega"];const ccol={Alpha:"var(--alpha)",Beta:"var(--beta)",Gamma:"var(--gamma)",Omega:"var(--omega)"};
+  const catmx=Math.max(1,...cats.map(c=>L.filter(x=>x.cat===c).length));
+  $("#byCat").innerHTML=cats.map(c=>barRow(c,L.filter(x=>x.cat===c).length,catmx,ccol[c],`drillCat('${c}')`)).join("");
 }
 
-/* ---- DEV table ---- */
-function statusPill(s){const m={Completed:"p-green",Rescheduled:"p-amber",Cancelled:"p-red",Pending:"p-blue","—":"p-gray"};return `<span class="pill ${m[s]||'p-gray'}"><span class="d"></span>${s}</span>`;}
-function renderDev(){
-  const L=DATA.leads.filter(x=>x.dev);
-  const done=L.filter(x=>x.dev.finalStatus==="Completed").length;
-  const resch=L.reduce((a,x)=>a+x.dev.reschedules,0);
-  const offsite=L.filter(x=>x.dev.onsite===false).length;
-  const avgD=(()=>{const t=L.filter(x=>x.dev.devTat!=null).map(x=>x.dev.devTat);return t.length?(t.reduce((a,b)=>a+b,0)/t.length).toFixed(1):"—";})();
-  $("#devKpis").innerHTML=kpiCard("DEV visits",L.length,`${done} completed`,"var(--solar)")
-    +kpiCard("Reschedules",resch,"across all visits","var(--amber)")
-    +kpiCard("Off-site completions",offsite,`> ${ONSITE_KM} km from project`,"var(--red)")
-    +kpiCard("Avg DEV TAT",avgD+"<small> d</small>","permission → completed","var(--teal)");
-  drawDevTbl();
+/* ====== INSIGHTS + MONTHLY + DESIGNER SUMMARY ====== */
+function renderInsights(){
+  const L=filtered();
+  const devC=L.filter(x=>x.dev&&x.dev.finalStatus==="Completed");
+  const dsnC=L.filter(x=>x.design.status==="Completed");
+  const dsnMeas=dsnC.filter(x=>["On time","Delayed"].includes(x.design.slaState));
+  const dsnOn=dsnMeas.filter(x=>x.design.slaState==="On time");
+  const dsnLate=dsnMeas.filter(x=>x.design.slaState==="Delayed");
+  const onPct=dsnMeas.length?Math.round(dsnOn.length/dsnMeas.length*100):0;
+  const offsite=devC.filter(x=>x.dev.onsite===false);
+  const resch=L.reduce((a,x)=>a+(x.dev?x.dev.reschedules:0),0);
+  const holdSaved=L.reduce((a,x)=>a+(x.design.holdDays||0)+(x.dev?x.dev.holdDays:0),0);
+  const unassigned=L.filter(x=>x.design.status==="Pending"&&!x.design.assignedTo);
+  const stale=L.filter(x=>x.design.status==="Pending"&&x.design.ageDays>=8);
+  const ic=(cls,ico,title,desc,ids)=>`<div class="ins ${cls}" ${ids&&ids.length?`style="cursor:pointer" onclick='drillSet(${JSON.stringify(ids)},"${title.replace(/"/g,'')}")'`:''}><div class="it"><span class="ico">${ico}</span>${title}</div><div class="ds">${desc}</div></div>`;
+  let cards=[];
+  cards.push(ic(onPct>=70?"good":"bad",onPct>=70?"✓":"▲",`Design on-time ${onPct}%`,`${dsnOn.length} of ${dsnMeas.length} measurable completed within SLA`,dsnOn.map(x=>x.id)));
+  if(dsnLate.length)cards.push(ic("bad","✗",`${dsnLate.length} design${dsnLate.length>1?'s':''} delayed`,"exceeded SLA target — click to view",dsnLate.map(x=>x.id)));
+  else cards.push(ic("good","✓","No delayed designs","everything completed within target",[]));
+  cards.push(ic(offsite.length?"bad":"good",offsite.length?"▲":"✓",`${offsite.length} off-site DEV`,`completed > ${ONSITE_KM} km from project site`,offsite.map(x=>x.id)));
+  cards.push(ic("neu","◷",`${resch} DEV reschedule${resch!==1?'s':''}`,"total reschedules across visits",L.filter(x=>x.dev&&x.dev.reschedules>0).map(x=>x.id)));
+  cards.push(ic("neu","⏸",`${Math.round(holdSaved*10)/10} hold days removed`,"excluded from TAT across DEV + design",L.filter(x=>(x.design.holdDays||0)>0||(x.dev&&x.dev.holdDays>0)).map(x=>x.id)));
+  if(unassigned.length)cards.push(ic("bad","✗",`${unassigned.length} unassigned`,"pending designs with no designer",unassigned.map(x=>x.id)));
+  if(stale.length)cards.push(ic("bad","✗",`${stale.length} stale (8d+)`,"pending designs ageing past 8 days",stale.map(x=>x.id)));
+  $("#insights").innerHTML=`<div class="ins-grid">${cards.join("")}</div>`;
 }
-function drawDevTbl(){
-  const f=$("#devStatusF").value, q=($("#devSearch").value||"").toLowerCase();
-  const rows=DATA.leads.filter(x=>x.dev)
-    .filter(x=>!f||x.dev.finalStatus===f)
-    .filter(x=>!q||x.id.toLowerCase().includes(q)||x.dev.devName.toLowerCase().includes(q));
-  $("#devTbl").innerHTML=`<thead><tr><th>Lead / Project</th><th>DEV</th><th>Status</th><th>Resch.</th><th>DEV TAT</th><th>Location check</th><th></th></tr></thead><tbody>`+
-    rows.map(L=>{
-      const d=L.dev, dl = d.distKm==null?'<span class="muted">—</span>':
-        (d.onsite?`<span class="dist" style="color:var(--green)">● on-site <span class="km">${d.distKm}km</span></span>`
-                 :`<span class="dist" style="color:var(--red)">▲ off-site <span class="km">${d.distKm}km</span></span>`);
-      return `<tr><td><b>${L.project}</b><br><span class="mono muted" style="font-size:11px">${L.id}</span></td>
-        <td>${d.devName}</td><td>${statusPill(d.finalStatus)}</td><td>${d.reschedules}</td>
-        <td class="tat-cell">${fmt(d.devTat)} d</td><td>${dl}</td>
-        <td><a class="link" onclick='openLead("${L.id}")'>Timeline →</a></td></tr>`;
-    }).join("")+`</tbody>`;
-  if(!rows.length)$("#devTbl").innerHTML+=`<tbody><tr><td colspan="7" style="text-align:center;padding:30px" class="muted">No DEV records match.</td></tr></tbody>`;
+function renderMonthly(){
+  const L=filtered();const mk=monthKey;
+  const months=[...new Set(L.flatMap(x=>[mk(x.received),mk(x.design.assigned),mk(x.design.completed),mk(x.dev?.permission),mk(x.dev?.completedDate)]).filter(Boolean))].sort();
+  const cell=(arr,lbl)=>arr.length?`<a class="link" onclick='drillSet(${JSON.stringify(arr.map(a=>a.id))},"${lbl}")'>${arr.length}</a>`:'<span class="muted">0</span>';
+  $("#monthlyTbl").innerHTML=`<thead><tr><th>Month</th><th>Leads</th><th>DEV assigned</th><th>DEV completed</th><th>Design assigned</th><th>Design completed</th><th>On-time</th></tr></thead><tbody>`+
+   months.map(m=>{
+     const leads=L.filter(x=>mk(x.received)===m);
+     const devA=L.filter(x=>x.dev&&mk(x.dev.permission)===m);
+     const devD=L.filter(x=>x.dev&&mk(x.dev.completedDate)===m);
+     const dsnA=L.filter(x=>mk(x.design.assigned)===m);
+     const dsnD=L.filter(x=>mk(x.design.completed)===m);
+     const onT=dsnD.filter(x=>x.design.slaState==="On time");
+     return `<tr><td class="mono" style="font-weight:500">${monthLbl(m)}</td><td>${cell(leads,monthLbl(m)+" leads")}</td><td>${cell(devA,monthLbl(m)+" DEV assigned")}</td><td>${cell(devD,monthLbl(m)+" DEV completed")}</td><td>${cell(dsnA,monthLbl(m)+" design assigned")}</td><td>${cell(dsnD,monthLbl(m)+" design completed")}</td><td>${cell(onT,monthLbl(m)+" on-time")} <span class="muted" style="font-size:11px">/ ${dsnD.length}</span></td></tr>`;}).join("")+`</tbody>`;
+  if(!months.length)$("#monthlyTbl").innerHTML+=`<tbody><tr><td colspan="7" style="text-align:center;padding:24px" class="muted">No data.</td></tr></tbody>`;
+}
+function renderDesignerSummary(){
+  const L=filtered();
+  const names=[...new Set(L.map(x=>x.design.assignedTo).filter(Boolean))];
+  const cell=(arr,lbl)=>arr.length?`<a class="link" onclick='drillSet(${JSON.stringify(arr.map(a=>a.id))},"${lbl}")'>${arr.length}</a>`:'<span class="muted">0</span>';
+  $("#designerTbl").innerHTML=`<thead><tr><th>Designer</th><th>Type</th><th>Assigned</th><th>Completed</th><th>On-time</th><th>Delayed</th><th>Avg net TAT</th></tr></thead><tbody>`+
+   names.map(n=>{const r=L.filter(x=>x.design.assignedTo===n);const type=r[0].design.type;
+     const comp=r.filter(x=>x.design.status==="Completed");const onT=comp.filter(x=>x.design.slaState==="On time");const late=comp.filter(x=>x.design.slaState==="Delayed");
+     const tats=comp.filter(x=>x.design.designTat!=null).map(x=>x.design.designTat);
+     return `<tr><td><b>${n}</b></td><td><span class="pill ${type==='Internal'?'p-blue':'p-gray'}"><span class="d"></span>${type}</span></td><td>${cell(r,n+" assigned")}</td><td>${cell(comp,n+" completed")}</td><td>${cell(onT,n+" on-time")}</td><td>${cell(late,n+" delayed")}</td><td class="tat-cell">${avgOf(tats)} d</td></tr>`;}).join("")+`</tbody>`;
+  if(!names.length)$("#designerTbl").innerHTML+=`<tbody><tr><td colspan="7" style="text-align:center;padding:24px" class="muted">No assigned designs.</td></tr></tbody>`;
+}
+function renderFunnel(){
+  const L=filtered();
+  const total=L.length;
+  const req=L.filter(x=>x.devReqState==="Required");
+  const notReq=L.filter(x=>x.devReqState==="Not required");
+  const notAsg=L.filter(x=>x.devReqState==="Not assigned");
+  const devDone=req.filter(x=>x.dev&&x.dev.finalStatus==="Completed");
+  const devPend=req.filter(x=>!x.dev||!["Completed","Cancelled"].includes(x.dev.finalStatus));
+  const devCanc=req.filter(x=>x.dev&&x.dev.finalStatus==="Cancelled");
+  const nrDone=notReq.filter(x=>x.design.status==="Completed");
+  const nrPend=notReq.filter(x=>x.design.status==="Pending");
+  const w=p=>Math.max(16,p/Math.max(total,1)*100);
+  const seg=(cls,arr,lbl,col)=>`<div class="mini" style="background:${col}" onclick='drillSet(${JSON.stringify(arr.map(a=>a.id))},"${lbl}")'><b>${arr.length}</b><span>${lbl}</span></div>`;
+  $("#funnel").innerHTML=`
+   <div class="funnel">
+     <div class="fn"><div class="fn-side">Total leads</div><div class="fn-bar" style="width:100%;background:var(--ink)" onclick='drillSet(${JSON.stringify(L.map(a=>a.id))},"All leads")'><b>${total}</b><span>unique leads received</span></div></div>
+     <div class="fn"><div class="fn-side">DEV required?</div>
+       <div class="b2" style="flex:1">
+         ${seg('','',`Required`,'var(--solar)').replace('></div>','>').replace(/onclick='[^']*'/,`onclick='drillSet(${JSON.stringify(req.map(a=>a.id))},"DEV required")'`)}<b style="display:none"></b>
+       </div></div>
+   </div>`;
+  // simpler explicit layout:
+  $("#funnel").innerHTML=`
+   <div class="funnel">
+     <div class="fn"><div class="fn-side">Total leads</div>
+       <div class="fn-bar" style="width:100%;background:var(--ink)" onclick='drillSet(${JSON.stringify(L.map(a=>a.id))},"All leads")'><b>${total}</b><span>unique leads received</span></div></div>
+
+     <div class="fn"><div class="fn-side">DEV requirement</div>
+       <div class="b2">
+         <div class="mini" style="background:var(--solar)" onclick='drillSet(${JSON.stringify(req.map(a=>a.id))},"DEV required")'><b>${req.length}</b><span>DEV required</span></div>
+         <div class="mini" style="background:var(--teal)" onclick='drillSet(${JSON.stringify(notReq.map(a=>a.id))},"DEV not required")'><b>${notReq.length}</b><span>Not required</span></div>
+         <div class="mini" style="background:#94A3B8" onclick='drillSet(${JSON.stringify(notAsg.map(a=>a.id))},"DEV not assigned")'><b>${notAsg.length}</b><span>Not assigned</span></div>
+       </div></div>
+
+     <div class="fn"><div class="fn-side">If DEV required →</div>
+       <div class="b2">
+         <div class="mini" style="background:var(--green)" onclick='drillSet(${JSON.stringify(devDone.map(a=>a.id))},"DEV completed")'><b>${devDone.length}</b><span>DEV completed</span></div>
+         <div class="mini" style="background:var(--amber)" onclick='drillSet(${JSON.stringify(devPend.map(a=>a.id))},"DEV pending")'><b>${devPend.length}</b><span>DEV pending</span></div>
+         <div class="mini" style="background:var(--red)" onclick='drillSet(${JSON.stringify(devCanc.map(a=>a.id))},"DEV cancelled")'><b>${devCanc.length}</b><span>Cancelled</span></div>
+       </div></div>
+
+     <div class="fn"><div class="fn-side">If not required →</div>
+       <div class="b2">
+         <div class="mini" style="background:var(--green)" onclick='drillSet(${JSON.stringify(nrDone.map(a=>a.id))},"Design completed (no DEV)")'><b>${nrDone.length}</b><span>Design completed</span></div>
+         <div class="mini" style="background:var(--amber)" onclick='drillSet(${JSON.stringify(nrPend.map(a=>a.id))},"Design pending (no DEV)")'><b>${nrPend.length}</b><span>Design pending</span></div>
+       </div></div>
+   </div>`;
 }
 
-/* ---- DESIGN table ---- */
-function renderDesign(){
-  const L=DATA.leads;
-  const comp=L.filter(x=>x.design.status==="Completed").length;
-  const pend=L.filter(x=>x.design.status==="Pending").length;
-  const rev=L.reduce((a,x)=>a+x.design.revisions,0);
-  $("#dsnKpis").innerHTML=kpiCard("Designs",L.length,`${comp} completed`,"var(--green)")
-    +kpiCard("Pending",pend,"in progress","var(--amber)")
-    +kpiCard("Total revisions",rev,"across all designs","var(--blue)")
-    +kpiCard("Avg design TAT",avgTat(L)+"<small> d</small>","completed only","var(--teal)");
-  drawDsnTbl();
+/* ====== DRILL POPUPS ====== */
+function leadsByIds(ids){return DATA.leads.filter(l=>ids.includes(l.id));}
+function drillTable(leads){
+  return `<div class="tbl-wrap"><table><thead><tr><th>Project</th><th>City</th><th>Size</th><th>HOTO</th><th>DEV</th><th>Designer</th><th>Design</th><th>TAT</th></tr></thead><tbody>`+
+   leads.map(L=>{const d=L.design;
+     const tat=d.status==="Completed"&&d.designTat!=null?`${d.designTat}d`:(L.dev&&L.dev.devTat!=null?`DEV ${L.dev.devTat}d`:"—");
+     return `<tr><td><a class="link" onclick='openLead("${L.id}")'>${L.project}</a><br><span class="mono muted" style="font-size:10px">${L.id}</span></td>
+       <td>${L.city}</td><td><span class="cat cat-${L.cat}">${L.cat}</span></td><td class="mono" style="font-size:11px">${monthLbl(monthKey(L.hoto))}</td>
+       <td>${L.dev?statusPill(L.dev.finalStatus):'<span class="muted">—</span>'}</td><td>${d.assignedTo||'<span class="muted">unassigned</span>'}</td>
+       <td>${statusPill(d.status)}</td><td class="tat-cell">${tat}</td></tr>`;}).join("")+`</tbody></table></div>`;
 }
-function drawDsnTbl(){
-  const sf=$("#dsnStatusF").value, tf=$("#dsnTypeF").value;
-  const rows=DATA.leads.filter(x=>!sf||x.design.status===sf).filter(x=>!tf||x.design.type===tf);
-  $("#dsnTbl").innerHTML=`<thead><tr><th>Lead / Project</th><th>Category</th><th>Designer</th><th>Type</th><th>Rev.</th><th>Status</th><th>TAT vs target</th></tr></thead><tbody>`+
-    rows.map(L=>{const d=L.design;
-      let tat='<span class="muted">—</span>';
-      if(d.status==="Completed"){
-        if(d.target===0)tat=`<span class="pill p-gray"><span class="d"></span>manual</span>`;
-        else{const cls=d.variance>0?"over":"under";tat=`<span class="tat-cell">${d.designTat}d / ${d.target}d <span class="${cls}">(${d.variance>0?'+':''}${d.variance})</span></span>`;}
-      }
-      return `<tr><td><b>${L.project}</b><br><span class="mono muted" style="font-size:11px">${L.id}</span></td>
-        <td><span class="cat cat-${L.cat}">${L.cat}</span></td><td>${d.designer}</td>
-        <td><span class="pill ${d.type==='Internal'?'p-blue':'p-gray'}"><span class="d"></span>${d.type}</span></td>
-        <td>${d.revisions}</td><td>${statusPill(d.status)}</td><td>${tat}</td></tr>`;
-    }).join("")+`</tbody>`;
+function drillBreak(leads,title){
+  // city-wise + designer-wise quick counts
+  const byCity={},byDsn={};
+  leads.forEach(L=>{byCity[L.city]=(byCity[L.city]||0)+1;const n=L.design.assignedTo||"Unassigned";byDsn[n]=(byDsn[n]||0)+1;});
+  const chips=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span class="pill p-gray" style="margin:2px"><span class="d"></span>${k}: ${v}</span>`).join("");
+  return `<div style="margin-bottom:10px"><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">By city</div>${chips(byCity)}</div>
+   <div style="margin-bottom:14px"><div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">By designer</div>${chips(byDsn)}</div>`+drillTable(leads);
 }
+function showModal(title,sub,html){$("#mTitle").textContent=title;$("#mSub").textContent=sub;$("#mBody").innerHTML=html;$("#modal").classList.add("show");}
+function drillSet(ids,title){const L=leadsByIds(ids);showModal(title,`${L.length} lead(s)`,drillBreak(L,title));}
+function drillCity(c){const L=filtered().filter(x=>x.city===c);showModal("City — "+c,`${L.length} lead(s)`,drillBreak(L,c));}
+function drillCat(c){const L=filtered().filter(x=>x.cat===c);showModal("Category — "+c,`${L.length} lead(s)`,drillBreak(L,c));}
+function drillHoto(m){const L=filtered().filter(x=>monthKey(x.hoto)===m);showModal("HOTO — "+monthLbl(m),`${L.length} lead(s)`,drillBreak(L,m));}
+function drillMonth(m,kind){let L;const mk=monthKey;
+  if(kind==="received")L=filtered().filter(x=>mk(x.received)===m);
+  else if(kind==="dev")L=filtered().filter(x=>mk(x.dev?.completedDate)===m);
+  else L=filtered().filter(x=>mk(x.design.completed)===m);
+  showModal(monthLbl(m)+" — "+kind,`${L.length} lead(s)`,drillBreak(L,m));}
+function drill(){const L=filtered();showModal("All leads",`${L.length} lead(s)`,drillBreak(L,"all"));}
+function go(v){$$(".tab").forEach(t=>t.classList.toggle("active",t.dataset.v===v));$$(".view").forEach(x=>x.classList.remove("active"));$("#v-"+v).classList.add("active");}
 
-/* ---- TAT view ---- */
-function renderTat(){
-  // internal vs external
-  const grp=t=>{const r=DATA.leads.filter(x=>x.design.type===t);
-    const comp=r.filter(x=>x.design.status==="Completed");
-    const tats=comp.filter(x=>x.design.designTat!=null).map(x=>x.design.designTat);
-    const onT=comp.filter(x=>x.design.slaState==="On time").length;
-    const meas=comp.filter(x=>x.design.slaState==="On time"||x.design.slaState==="Delayed").length;
-    return {count:r.length,completed:comp.length,
-      avg:tats.length?(tats.reduce((a,b)=>a+b,0)/tats.length).toFixed(1):"—",
-      rev:r.reduce((a,x)=>a+x.design.revisions,0),
-      sla:meas?Math.round(onT/meas*100):0};};
+/* ====== MAP ====== */
+let map,markerLayer,mapMode="city";
+const CITY_COL={Pune:"#2563C9",Delhi:"#D97706",Mumbai:"#0E9488"},DEV_COL={Completed:"#16A34A",Rescheduled:"#D97706",Cancelled:"#DC2626",None:"#94A3B8"},CAT_COL={Alpha:"#2563C9",Beta:"#0E9488",Gamma:"#D97706",Omega:"#9333EA"};
+function colorFor(L){return mapMode==="city"?(CITY_COL[L.city]||"#94A3B8"):mapMode==="cat"?CAT_COL[L.cat]:DEV_COL[L.dev?L.dev.finalStatus:"None"];}
+function dot(c){return L.divIcon({className:"",html:`<div style="width:15px;height:15px;border-radius:50%;background:${c};border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,iconSize:[15,15],iconAnchor:[7,7]});}
+function initMap(){if(map)return;map=L.map("map",{scrollWheelZoom:false}).setView([20.5,75],5);L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap, © CARTO"}).addTo(map);markerLayer=L.layerGroup().addTo(map);drawMarkers();}
+function drawMarkers(){if(!markerLayer)return;markerLayer.clearLayers();const pts=[];
+  filtered().forEach(L=>{const m=window.L.marker([L.lat,L.lng],{icon:dot(colorFor(L))});
+    let dv="No DEV required";if(L.dev){const dl=L.dev.distKm==null?"":(L.dev.onsite?`<span style="color:#16A34A">on-site (${L.dev.distKm}km)</span>`:`<span style="color:#DC2626">${L.dev.distKm}km from site</span>`);dv=`DEV: <b>${L.dev.finalStatus}</b> · ${L.dev.devName}<br>${L.dev.reschedules} reschedule(s) · ${dl}`;}
+    m.bindPopup(`<div style="font-family:Inter;font-size:13px;min-width:200px"><b>${L.project}</b><br><span style="color:#5A6B7E">${L.id}</span><hr style="border:none;border-top:1px solid #E2E8F0;margin:7px 0">${L.city} · ${L.capacity}kWp · <b>${L.cat}</b><br>${dv}<br>Design: <b>${L.design.status}</b> (${L.design.type})</div>`);
+    m.addTo(markerLayer);pts.push([L.lat,L.lng]);
+    if(L.dev&&L.dev.effective&&L.dev.effective.lat&&L.dev.onsite===false){const dm=window.L.circleMarker([L.dev.effective.lat,L.dev.effective.lng],{radius:6,color:"#DC2626",weight:2,fillColor:"#FCE7E7",fillOpacity:.8});dm.bindPopup(`<b>DEV completed here</b><br>${L.dev.distKm}km from project`);dm.addTo(markerLayer);window.L.polyline([[L.lat,L.lng],[L.dev.effective.lat,L.dev.effective.lng]],{color:"#DC2626",weight:1.5,dashArray:"4 4"}).addTo(markerLayer);}});
+  if(pts.length)map.fitBounds(pts,{padding:[40,40]});renderLegend();}
+function renderLegend(){const items=mapMode==="city"?Object.entries(CITY_COL):mapMode==="cat"?Object.entries(CAT_COL):Object.entries(DEV_COL);
+  $("#mapLegend").innerHTML=items.map(([k,c])=>`<span class="it"><span class="sw" style="background:${c}"></span>${k}</span>`).join("")+`<span class="it" style="margin-left:auto;color:#DC2626"><span class="sw" style="background:#FCE7E7;border-color:#DC2626"></span>Off-site DEV</span>`;}
+
+/* ====== DEV table ====== */
+function renderDev(){const L=filtered().filter(x=>x.dev);
+  const done=L.filter(x=>x.dev.finalStatus==="Completed").length,resch=L.reduce((a,x)=>a+x.dev.reschedules,0),off=L.filter(x=>x.dev.onsite===false).length;
+  $("#devKpis").innerHTML=kpi("DEV visits",L.length,`${done} completed`,"var(--solar)")+kpi("Reschedules",resch,"all visits","var(--amber)")+kpi("Off-site",off,`> ${ONSITE_KM} km`,"var(--red)")+kpi("Avg DEV TAT",avgOf(L.filter(x=>x.dev.devTat!=null).map(x=>x.dev.devTat))+"<small> d</small>","permission → done","var(--teal)");
+  $("#devTbl").innerHTML=`<thead><tr><th>Lead / Project</th><th>DEV</th><th>Status</th><th>Resch.</th><th>DEV TAT</th><th>Location</th><th></th></tr></thead><tbody>`+
+   L.map(L0=>{const d=L0.dev,dl=d.distKm==null?'<span class="muted">—</span>':(d.onsite?`<span class="dist" style="color:var(--green)">● on-site <span class="km">${d.distKm}km</span></span>`:`<span class="dist" style="color:var(--red)">▲ off-site <span class="km">${d.distKm}km</span></span>`);
+     return `<tr><td><b>${L0.project}</b><br><span class="mono muted" style="font-size:10px">${L0.id}</span></td><td>${d.devName}</td><td>${statusPill(d.finalStatus)}</td><td>${d.reschedules}</td><td class="tat-cell">${fmt(d.devTat)} d</td><td>${dl}</td><td><a class="link" onclick='openLead("${L0.id}","dev")'>DEV →</a></td></tr>`;}).join("")+`</tbody>`;
+  if(!L.length)$("#devTbl").innerHTML+=`<tbody><tr><td colspan="7" style="text-align:center;padding:30px" class="muted">No DEV records.</td></tr></tbody>`;}
+
+/* ====== Design table ====== */
+function renderDesign(){const L=filtered();
+  const comp=L.filter(x=>x.design.status==="Completed").length,pend=L.filter(x=>x.design.status==="Pending").length,rev=L.reduce((a,x)=>a+x.design.revisions,0);
+  $("#dsnKpis").innerHTML=kpi("Designs",L.length,`${comp} completed`,"var(--green)")+kpi("Pending",pend,"in progress","var(--amber)")+kpi("Revisions",rev,"total","var(--blue)")+kpi("Avg design TAT",avgOf(L.filter(x=>x.design.status==="Completed"&&x.design.designTat!=null).map(x=>x.design.designTat))+"<small> d</small>","completed","var(--teal)");
+  $("#dsnTbl").innerHTML=`<thead><tr><th>Lead / Project</th><th>Size</th><th>Designer</th><th>Type</th><th>Rev.</th><th>Status</th><th>TAT vs target</th><th></th></tr></thead><tbody>`+
+   L.map(L0=>{const d=L0.design;let tat='<span class="muted">—</span>';if(d.status==="Completed"){if(d.target===0)tat='<span class="pill p-gray"><span class="d"></span>manual</span>';else{const c=d.variance>0?"over":"under";tat=`<span class="tat-cell">${d.designTat}d / ${d.target}d <span class="${c}">(${d.variance>0?'+':''}${d.variance})</span></span>`;}}else if(d.status==="Cancelled"){tat=`<span style="color:var(--red);font-size:11.5px">${d.cancelReason||d.instType}</span>`;}
+     return `<tr><td><b>${L0.project}</b><br><span class="mono muted" style="font-size:10px">${L0.id}</span></td><td><span class="cat cat-${L0.cat}">${L0.cat}</span></td><td>${d.designer}</td><td><span class="pill ${d.type==='Internal'?'p-blue':'p-gray'}"><span class="d"></span>${d.type}</span></td><td>${d.revisions}</td><td>${statusPill(d.status)}</td><td>${tat}</td><td><a class="link" onclick='openLead("${L0.id}","dsn")'>Design →</a></td></tr>`;}).join("")+`</tbody>`;}
+
+/* ====== Pending ageing ====== */
+function renderPending(){const P=filtered().filter(x=>x.design.status==="Pending");
+  const ages=P.map(x=>x.design.ageDays).filter(v=>v!=null);
+  $("#pendKpis").innerHTML=kpi("Pending designs",P.length,"open","var(--amber)")+kpi("Avg age",avgOf(ages)+"<small> d</small>","since assigned","var(--red)")+kpi("Oldest",ages.length?Math.max(...ages)+"<small> d</small>":"—","","var(--red)")+kpi("Unassigned",P.filter(x=>!x.design.assignedTo).length,"no designer","var(--blue)");
+  const grp=(keyFn,col)=>{const o={};P.forEach(x=>{const k=keyFn(x);o[k]=(o[k]||0)+1;});const mx=Math.max(1,...Object.values(o));return Object.entries(o).sort((a,b)=>b[1]-a[1]).map(([k,v])=>barRow(k,v,mx,col)).join("")||'<div class="muted">None.</div>';};
+  $("#pendCity").innerHTML=grp(x=>x.city,"var(--blue)");
+  $("#pendDsn").innerHTML=grp(x=>x.design.assignedTo||"Unassigned","var(--teal)");
+  $("#pendCat").innerHTML=grp(x=>x.cat,"var(--amber)");
+  $("#pendTbl").innerHTML=`<thead><tr><th>Project</th><th>City</th><th>Size</th><th>Designer</th><th>Type</th><th>Assigned</th><th>Age</th></tr></thead><tbody>`+
+   P.sort((a,b)=>(b.design.ageDays||0)-(a.design.ageDays||0)).map(L=>{const a=L.design.ageDays;const cls=a>=8?"over":a>=4?"":"under";
+     return `<tr><td><a class="link" onclick='openLead("${L.id}")'>${L.project}</a></td><td>${L.city}</td><td><span class="cat cat-${L.cat}">${L.cat}</span></td><td>${L.design.assignedTo||'<span class="muted">unassigned</span>'}</td><td>${L.design.type}</td><td class="mono" style="font-size:11px">${L.design.assigned||"—"}</td><td class="tat-cell ${cls}">${a==null?"—":a+" d"}</td></tr>`;}).join("")+`</tbody>`;
+  if(!P.length)$("#pendTbl").innerHTML+=`<tbody><tr><td colspan="7" style="text-align:center;padding:30px" class="muted">No pending designs.</td></tr></tbody>`;}
+
+/* ====== TAT ====== */
+function renderTat(){const L=filtered();
+  const grp=t=>{const r=L.filter(x=>x.design.type===t),comp=r.filter(x=>x.design.status==="Completed"),tats=comp.filter(x=>x.design.designTat!=null).map(x=>x.design.designTat),meas=comp.filter(x=>["On time","Delayed"].includes(x.design.slaState)),onT=meas.filter(x=>x.design.slaState==="On time").length;
+    return {count:r.length,completed:comp.length,avg:avgOf(tats),rev:r.reduce((a,x)=>a+x.design.revisions,0),sla:meas.length?Math.round(onT/meas.length*100):0};};
   const I=grp("Internal"),E=grp("External");
-  const card=(name,c,col)=>`<div class="cmp-card"><h4><span class="d" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col}"></span>${name}</h4>
-    <div class="stat"><span>Designs handled</span><b>${c.count}</b></div>
-    <div class="stat"><span>Completed</span><b>${c.completed}</b></div>
-    <div class="stat"><span>Avg design TAT</span><b>${c.avg} d</b></div>
-    <div class="stat"><span>Total revisions</span><b>${c.rev}</b></div>
-    <div class="stat"><span>SLA on-time</span><b>${c.sla}%</b></div></div>`;
+  const card=(n,c,col)=>`<div style="border:1px solid var(--line);border-radius:10px;padding:15px"><h4 style="font-size:13px;margin-bottom:12px"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${col};margin-right:7px"></span>${n}</h4>
+    ${[["Designs handled",c.count],["Completed",c.completed],["Avg design TAT",c.avg+" d"],["Revisions",c.rev],["SLA on-time",c.sla+"%"]].map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px"><span>${k}</span><b class="mono" style="font-weight:500">${v}</b></div>`).join("")}</div>`;
   $("#intExt").innerHTML=card("Internal",I,"var(--blue)")+card("External",E,"var(--teal)");
-
-  // SLA matrix
-  $("#slaMatrix").innerHTML=`<thead><tr><th>Category</th><th>DC band</th><th>DEV</th><th>Design</th><th>Revision design</th></tr></thead><tbody>`+
-    [["Alpha","≤30 kWp"],["Beta","30–100"],["Gamma","100–200"],["Omega","≥200"]].map(([c,b])=>{
-      const f=SLA.first[c],r=SLA.revision[c];
-      const d=(v)=>v===0?'<span class="muted">manual</span>':v+'d';
-      return `<tr><td><span class="cat cat-${c}">${c}</span></td><td class="mono" style="font-size:12px">${b}</td><td>${d(f.dev)}</td><td>${d(f.design)}</td><td>${d(r.design)}</td></tr>`;
-    }).join("")+`</tbody>`;
-
-  // delay tracking
-  const comp=DATA.leads.filter(x=>x.design.status==="Completed");
+  $("#slaMatrix").innerHTML=`<thead><tr><th>Cat</th><th>DC band</th><th>DEV</th><th>Design</th><th>Rev. design</th></tr></thead><tbody>`+
+   [["Alpha","≤30"],["Beta","30–100"],["Gamma","100–200"],["Omega","≥200"]].map(([c,b])=>{const f=SLA.first[c],r=SLA.revision[c],d=v=>v===0?'<span class="muted">manual</span>':v+'d';return `<tr><td><span class="cat cat-${c}">${c}</span></td><td class="mono" style="font-size:11px">${b}</td><td>${d(f.dev)}</td><td>${d(f.design)}</td><td>${d(r.design)}</td></tr>`;}).join("")+`</tbody>`;
+  const comp=L.filter(x=>x.design.status==="Completed");
   $("#delayTbl").innerHTML=`<thead><tr><th>Project</th><th>Cat</th><th>Scenario</th><th>Target</th><th>Actual</th><th>Variance</th><th>Status</th></tr></thead><tbody>`+
-    comp.map(L=>{const d=L.design;
-      if(d.target===0)return `<tr><td><b>${L.project}</b></td><td><span class="cat cat-${L.cat}">${L.cat}</span></td><td>${d.scenario}</td><td colspan="3" class="muted">no fixed SLA</td><td>${statusPill("—")}<span class="pill p-gray" style="margin-left:4px"><span class="d"></span>manual</span></td></tr>`;
-      const cls=d.variance>0?"over":"under";
-      return `<tr><td><b>${L.project}</b></td><td><span class="cat cat-${L.cat}">${L.cat}</span></td><td>${d.scenario}</td>
-        <td class="tat-cell">${d.target} d</td><td class="tat-cell">${d.designTat} d</td>
-        <td class="tat-cell ${cls}">${d.variance>0?'+':''}${d.variance} d</td>
-        <td>${d.slaState==="On time"?statusPill("Completed").replace("Completed","On time").replace("p-green","p-green"):`<span class="pill p-red"><span class="d"></span>Delayed</span>`}</td></tr>`;
-    }).join("")+`</tbody>`;
-}
+   comp.map(L0=>{const d=L0.design;if(d.target===0)return `<tr><td>${L0.project}</td><td><span class="cat cat-${L0.cat}">${L0.cat}</span></td><td>${d.scenario}</td><td colspan="3" class="muted">no fixed SLA</td><td>${statusPill("—")}</td></tr>`;const c=d.variance>0?"over":"under";return `<tr><td>${L0.project}</td><td><span class="cat cat-${L0.cat}">${L0.cat}</span></td><td>${d.scenario}</td><td class="tat-cell">${d.target}d</td><td class="tat-cell">${d.designTat}d</td><td class="tat-cell ${c}">${d.variance>0?'+':''}${d.variance}d</td><td>${statusPill(d.slaState)}</td></tr>`;}).join("")+`</tbody>`;}
 
-/* ---- TEAM ---- */
-function renderTeam(){
-  const a=DATA.attendance;
-  const present=a.filter(x=>x.present==="Present").length;
-  const avail=a.filter(x=>x.avail==="Available").length;
-  $("#teamKpis").innerHTML=kpiCard("DEVs on roll",a.length,"","var(--solar)")
-    +kpiCard("Present today",present,`${a.length-present} on leave`,"var(--green)")
-    +kpiCard("Available now",avail,"free to assign","var(--blue)")
-    +kpiCard("Total assigned",a.reduce((s,x)=>s+x.assigned,0),"open DEV tasks","var(--amber)");
-  $("#attTbl").innerHTML=`<thead><tr><th>DEV</th><th>Attendance</th><th>Availability</th><th>Assigned</th><th>Approval</th></tr></thead><tbody>`+
-    a.map(x=>`<tr><td><b>${x.name}</b><br><span class="mono muted" style="font-size:11px">${x.id}</span></td>
-      <td>${x.present==="Present"?statusPill("Completed").replace("Completed","Present"):'<span class="pill p-red"><span class="d"></span>Leave</span>'}</td>
-      <td><span class="pill ${x.avail==='Available'?'p-green':x.avail==='On site'?'p-blue':'p-gray'}"><span class="d"></span>${x.avail}</span></td>
-      <td>${x.assigned}</td><td><span class="muted">${x.approval}</span></td></tr>`).join("")+`</tbody>`;
-  // designer load
-  const load={};DATA.leads.forEach(L=>{const n=L.design.designer;if(n&&n!=="—"){load[n]=load[n]||{c:0,t:L.design.type};load[n].c++;}});
-  const mx=Math.max(...Object.values(load).map(x=>x.c),1);
-  $("#dsnLoad").innerHTML=Object.entries(load).sort((a,b)=>b[1].c-a[1].c)
-    .map(([n,o])=>bar(n,o.c,mx,o.t==="Internal"?"var(--blue)":"var(--teal)")).join("");
+/* ====== CALENDAR ====== */
+let calDate=new Date("2026-06-01"),calMode="both";
+function calMove(n){calDate.setMonth(calDate.getMonth()+n);renderCalendar();}
+function renderCalendar(){const y=calDate.getFullYear(),m=calDate.getMonth();$("#calLabel").textContent=MN[m]+" "+y;
+  const L=filtered();const events={};
+  const add=(date,html,cls)=>{if(!date)return;const k=date.slice(0,10);(events[k]=events[k]||[]).push({html,cls});};
+  L.forEach(x=>{if((calMode==="both"||calMode==="dev")&&x.dev&&x.dev.completedDate)add(x.dev.completedDate,`DEV: ${x.project}`,"ev-dev");
+    if((calMode==="both"||calMode==="dsn")&&x.design.completed)add(x.design.completed,`Design: ${x.project}`,"ev-dsn");});
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<first;i++)html+=`<div class="cell out"></div>`;
+  for(let d=1;d<=days;d++){const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;const evs=events[key]||[];
+    html+=`<div class="cell ${evs.length?'has':''}" ${evs.length?`onclick="calDay('${key}')"`:''}><div class="dn">${d}</div>${evs.slice(0,3).map(e=>`<div class="ev ${e.cls}" title="${e.html}">${e.html}</div>`).join("")}${evs.length>3?`<div class="muted" style="font-size:10px">+${evs.length-3} more</div>`:""}</div>`;}
+  $("#cal").innerHTML=html;}
+function calDay(key){
+  const L=filtered();const cards=[];
+  L.forEach(x=>{
+    if((calMode==="both"||calMode==="dev")&&x.dev&&x.dev.completedDate===key)cards.push(devDayCard(x));
+    if((calMode==="both"||calMode==="dsn")&&x.design.completed===key)cards.push(dsnDayCard(x));
+  });
+  const dt=new Date(key+"T00:00:00");const lbl=dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const devN=L.filter(x=>x.dev&&x.dev.completedDate===key).length,dsnN=L.filter(x=>x.design.completed===key).length;
+  showModal(lbl,`${cards.length} event(s) · ${devN} DEV · ${dsnN} design completed`,cards.join("")||'<div class="muted">No events.</div>');
 }
+function devDayCard(L){const d=L.dev;const dist=d.distKm==null?"":(d.onsite?`<span class="s" style="color:var(--green)">📍 on-site <b>${d.distKm}km</b></span>`:`<span class="s" style="color:var(--red)">📍 off-site <b>${d.distKm}km</b></span>`);
+  return `<div class="daycard dev"><div class="top"><div><div class="pn">${L.project}</div><div class="pid">${L.id}</div></div><span class="pill p-amber"><span class="d"></span>DEV ${d.finalStatus}</span></div>
+   <div class="meta"><span class="m">DEV&nbsp;<b>${d.devName}</b></span><span class="m">City&nbsp;<b>${L.city}</b></span><span class="m">Size&nbsp;<b>${L.capacity}kWp · ${L.cat}</b></span></div>
+   <div class="strip"><span class="s">Permission: <b>${d.permission}</b></span><span class="s">Completed: <b>${d.completedDate}</b></span><span class="s">Net TAT: <b>${fmt(d.devTat)}d</b>${d.holdDays?` (−${d.holdDays}d hold)`:""}</span><span class="s">Reschedules: <b>${d.reschedules}</b></span>${dist}</div>
+   <div style="margin-top:8px"><a class="link" onclick='openLead("${L.id}","dev")'>DEV details →</a></div></div>`;}
+function dsnDayCard(L){const d=L.design;const sla=d.target===0?'<span class="pill p-gray"><span class="d"></span>manual</span>':statusPill(d.slaState);
+  return `<div class="daycard dsn"><div class="top"><div><div class="pn">${L.project}</div><div class="pid">${L.id}</div></div>${sla}</div>
+   <div class="meta"><span class="m">Designer&nbsp;<b>${d.designer}</b></span><span class="m">Type&nbsp;<b>${d.type}</b></span><span class="m">City&nbsp;<b>${L.city}</b></span><span class="m">Size&nbsp;<b>${L.cat}</b></span></div>
+   <div class="strip"><span class="s">Assigned: <b>${d.assigned}</b></span><span class="s">Completed: <b>${d.completed}</b></span><span class="s">Net TAT: <b>${fmt(d.designTat)}d</b> / ${d.target||"manual"}${d.holdDays?` (−${d.holdDays}d hold)`:""}</span><span class="s">Revisions: <b>${d.revisions}</b></span></div>
+   <div style="margin-top:8px"><a class="link" onclick='openLead("${L.id}","dsn")'>Design details →</a></div></div>`;}
 
-/* ---- lead timeline modal ---- */
-function openLead(id){
-  const L=DATA.leads.find(x=>x.id===id); if(!L)return;
-  $("#mTitle").textContent=L.project; $("#mSub").textContent=L.id+" · "+L.city+" · "+L.capacity+" kWp · "+L.cat;
-  let items=[];
-  items.push({c:"ok",t:"Lead received / HOTO",m:L.addr});
-  if(L.dev){
-    items.push({c:"ok",t:"Client permission to visit",m:L.dev.permission});
-    L.dev.blocks.forEach((b,i)=>{
-      const c=b.connected==="Completed"?"ok":b.connected==="Cancelled"?"bad":"warn";
-      items.push({c,t:`DEV attempt ${i+1} — ${b.connected}`,m:`scheduled ${b.sched}${b.ts?" · done "+b.ts:""}`});
-    });
-    if(L.dev.distKm!=null)items.push({c:L.dev.onsite?"ok":"bad",t:"Location check",
-      m:L.dev.onsite?`on-site (${L.dev.distKm} km)`:`${L.dev.distKm} km from project site`});
-    if(L.dev.devTat!=null)items.push({c:"ok",t:"DEV TAT",m:`${L.dev.devTat} days (permission → completed)`});
-  } else items.push({c:"ok",t:"DEV not required",m:"design from satellite"});
-  const d=L.design;
-  if(d.status==="Cancelled")items.push({c:"bad",t:"Cancelled",m:d.instType});
-  else{
-    items.push({c:"ok",t:`Design assigned — ${d.designer}`,m:`${d.type} · ${d.assigned||"—"}`});
-    if(d.revisions>0)items.push({c:"warn",t:`${d.revisions} revision(s)`,m:""});
-    if(d.status==="Completed")items.push({c:d.slaState==="Delayed"?"bad":"ok",t:"Design completed",
-      m:`${d.completed} · TAT ${d.designTat}d vs ${d.target||"manual"} ${d.target?"target — "+d.slaState:""}`});
-    else items.push({c:"warn",t:"Design pending",m:""});
-  }
-  $("#mBody").innerHTML=`<div class="tl">`+items.map(i=>`<div class="tl-it ${i.c}"><div class="t">${i.t}</div>${i.m?`<div class="m">${i.m}</div>`:""}</div>`).join("")+`</div>`;
-  $("#modal").classList.add("show");
+/* ====== COHORT ====== */
+function renderCohort(){const L=filtered();const months=[...new Set(L.map(x=>monthKey(x.hoto)).filter(Boolean))].sort();
+  const row=m=>{const c=L.filter(x=>monthKey(x.hoto)===m);return {total:c.length,devReq:c.filter(x=>x.devReqState==="Required").length,devDone:c.filter(x=>x.dev&&x.dev.finalStatus==="Completed").length,dsnDone:c.filter(x=>x.design.status==="Completed").length,pend:c.filter(x=>x.design.status==="Pending").length};};
+  $("#cohortTbl").innerHTML=`<thead><tr><th>HOTO cohort</th><th>Leads</th><th>DEV req.</th><th>DEV done</th><th>Design done</th><th>Pending</th><th>Conv. %</th></tr></thead><tbody>`+
+   months.map(m=>{const r=row(m),pct=r.total?Math.round(r.dsnDone/r.total*100):0;
+     return `<tr><td class="hm">${monthLbl(m)}</td><td class="heat"><a class="link" onclick='drillHoto("${m}")'>${r.total}</a></td><td class="heat">${r.devReq}</td><td class="heat">${r.devDone}</td><td class="heat">${r.dsnDone}</td><td class="heat">${r.pend}</td><td class="heat"><b>${pct}%</b></td></tr>`;}).join("")+`</tbody>`;
+  if(!months.length)$("#cohortTbl").innerHTML+=`<tbody><tr><td colspan="7" style="text-align:center;padding:30px" class="muted">No cohorts.</td></tr></tbody>`;}
+
+/* ====== PROJECTS ====== */
+function renderProjects(){const q=($("#projSearch").value||"").toLowerCase();
+  const L=filtered().filter(x=>!q||(x.project+x.id+x.city+x.cat).toLowerCase().includes(q));
+  $("#projTbl").innerHTML=`<thead><tr><th>Project</th><th>City</th><th>Size</th><th>HOTO</th><th>DEV req.</th><th>DEV</th><th>Designer</th><th>Type</th><th>Design</th><th>TAT</th><th></th></tr></thead><tbody>`+
+   L.map(L0=>{const d=L0.design;const tat=d.status==="Completed"&&d.designTat!=null?`${d.designTat}d`:(L0.dev&&L0.dev.devTat!=null?`DEV ${L0.dev.devTat}d`:"—");
+     return `<tr><td><b>${L0.project}</b><br><span class="mono muted" style="font-size:10px">${L0.id}</span></td><td>${L0.city}</td><td><span class="cat cat-${L0.cat}">${L0.cat}</span></td><td class="mono" style="font-size:11px">${monthLbl(monthKey(L0.hoto))}</td><td>${L0.devReqState}</td><td>${L0.dev?statusPill(L0.dev.finalStatus):'<span class="muted">—</span>'}</td><td>${d.assignedTo||'<span class="muted">—</span>'}</td><td>${d.type}</td><td>${statusPill(d.status)}</td><td class="tat-cell">${tat}</td><td><a class="link" onclick='openLead("${L0.id}")'>Journey →</a></td></tr>`;}).join("")+`</tbody>`;
+  if(!L.length)$("#projTbl").innerHTML+=`<tbody><tr><td colspan="11" style="text-align:center;padding:30px" class="muted">No projects match.</td></tr></tbody>`;}
+
+/* ====== TEAM ====== */
+function renderTeam(){const users=DATA.users||[];const devs=users.filter(u=>u.role==="DEV"),designers=users.filter(u=>u.role!=="DEV");
+  const devLoad={},dsnLoad={};DATA.leads.forEach(L=>{if(L.dev&&L.dev.devName)devLoad[L.dev.devName]=(devLoad[L.dev.devName]||0)+1;const n=L.design.assignedTo;if(n)dsnLoad[n]=(dsnLoad[n]||0)+1;});
+  const att=Object.fromEntries(DATA.attendance.map(a=>[a.name,a]));
+  const present=devs.filter(d=>att[d.name]&&att[d.name].present==="Present").length;
+  const idle=designers.filter(d=>!(dsnLoad[d.name]>0)).length+devs.filter(d=>!(devLoad[d.name]>0)).length;
+  $("#teamKpis").innerHTML=kpi("Total users",users.length,`${devs.length} DEV · ${designers.length} designers`,"var(--solar)")+kpi("DEVs present",present,`of ${devs.length}`,"var(--green)")+kpi("Idle",idle,"0 assigned","var(--blue)")+kpi("Open DEV tasks",Object.values(devLoad).reduce((a,b)=>a+b,0),"","var(--amber)");
+  $("#attTbl").innerHTML=`<thead><tr><th>DEV</th><th>Attendance</th><th>Availability</th><th>Assigned</th></tr></thead><tbody>`+
+   devs.map(d=>{const a=att[d.name]||{},n=devLoad[d.name]||0;const pres=a.present==="Present"?'<span class="pill p-green"><span class="d"></span>Present</span>':a.present==="Leave"?'<span class="pill p-red"><span class="d"></span>Leave</span>':'<span class="pill p-gray"><span class="d"></span>—</span>';const av=a.avail||"—";
+     return `<tr><td><b>${d.name}</b><br><span class="mono muted" style="font-size:10px">${d.id} · ${d.city}</span></td><td>${pres}</td><td><span class="pill ${av==='Available'?'p-green':av==='On site'?'p-blue':'p-gray'}"><span class="d"></span>${av}</span></td><td>${n>0?n:'<span class="muted">idle</span>'}</td></tr>`;}).join("")+`</tbody>`;
+  const mx=Math.max(1,...designers.map(d=>dsnLoad[d.name]||0));
+  $("#dsnLoad").innerHTML=designers.sort((a,b)=>(dsnLoad[b.name]||0)-(dsnLoad[a.name]||0)).map(d=>{const n=dsnLoad[d.name]||0,w=mx?Math.max(4,n/mx*100):0;
+    return `<div class="bar-row" style="grid-template-columns:200px 1fr 46px"><span style="font-size:12px">${d.name} <span class="cat ${d.role==='DE'?'cat-Alpha':'cat-Beta'}" style="font-size:9px;padding:1px 5px">${d.role==='DE'?'Int':'Ext'}</span></span><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${d.role==='DE'?'var(--blue)':'var(--teal)'}">${n}</div></div><span class="muted">${n===0?'idle':''}</span></div>`;}).join("");}
+
+/* ====== lead journey modal (with DEV / Design detail tabs) ====== */
+function openLead(id,focus){const L=DATA.leads.find(x=>x.id===id);if(!L)return;
+  $("#mTitle").textContent=L.project;$("#mSub").textContent=`${L.id} · ${L.city} · ${L.capacity}kWp · ${L.cat}`;
+  const tabBtns=`<div class="dtab"><button class="${!focus||focus==='journey'?'on':''}" onclick="leadTab('${id}','journey')">Journey</button><button class="${focus==='dev'?'on':''}" onclick="leadTab('${id}','dev')">DEV details</button><button class="${focus==='dsn'?'on':''}" onclick="leadTab('${id}','dsn')">Design details</button></div>`;
+  $("#mBody").innerHTML=tabBtns+`<div id="leadTabBody"></div>`;leadTab(id,focus||"journey");$("#modal").classList.add("show");}
+function leadTab(id,tab){const L=DATA.leads.find(x=>x.id===id);$$("#mBody .dtab button").forEach(b=>b.classList.toggle("on",b.textContent.toLowerCase().includes(tab==='dsn'?'design':tab)));
+  const B=$("#leadTabBody");
+  if(tab==="journey"){let items=[{c:"ok",t:"Lead received / HOTO",m:`${L.addr} · ${L.hoto}`}];
+    if(L.dev){items.push({c:"ok",t:"Client permission to visit",m:L.dev.permission});
+      L.dev.blocks.forEach((b,i)=>{const c=b.connected==="Completed"?"ok":b.connected==="Cancelled"?"bad":"warn";items.push({c,t:`DEV attempt ${i+1} — ${b.connected}`,m:`scheduled ${b.sched}${b.ts?" · done "+b.ts:""}`});});
+      if(L.dev.holdStart)items.push({c:"warn",t:`On hold during DEV (${L.dev.holdDays}d)`,m:`${L.dev.holdStart} → ${L.dev.holdEnd} · ${L.dev.holdReason||""}`});
+      if(L.dev.distKm!=null)items.push({c:L.dev.onsite?"ok":"bad",t:"Location check",m:L.dev.onsite?`on-site (${L.dev.distKm}km)`:`${L.dev.distKm}km from project`});
+      if(L.dev.devTat!=null)items.push({c:"ok",t:"DEV TAT (net of hold)",m:`${L.dev.devTat} d net${L.dev.holdDays?` · gross ${L.dev.grossTat}d − ${L.dev.holdDays}d hold`:""}`});}
+    else items.push({c:"ok",t:"DEV not required",m:"design from satellite"});
+    const d=L.design;if(d.status==="Cancelled")items.push({c:"bad",t:"Cancelled",m:d.cancelReason||d.instType});
+    else{items.push({c:"ok",t:`Design assigned — ${d.designer}`,m:`${d.type} · ${d.assigned||"—"}`});if(d.revisions>0)items.push({c:"warn",t:`${d.revisions} revision(s)`,m:""});
+      if(d.holdStart)items.push({c:"warn",t:`Design on hold (${d.holdDays}d)`,m:`${d.holdStart} → ${d.holdEnd} · ${d.holdReason||""}`});
+      if(d.status==="Completed")items.push({c:d.slaState==="Delayed"?"bad":"ok",t:"Design completed",m:`${d.completed} · net TAT ${d.designTat}d vs ${d.target||"manual"}${d.target?" — "+d.slaState:""}${d.holdDays?` (gross ${d.grossTat}d − ${d.holdDays}d hold)`:""}`});
+      else items.push({c:"warn",t:"Design pending",m:d.ageDays!=null?`${d.ageDays} days old`:""});}
+    B.innerHTML=`<div class="tl">`+items.map(i=>`<div class="tl-it ${i.c}"><div class="t">${i.t}</div>${i.m?`<div class="m">${i.m}</div>`:""}</div>`).join("")+`</div>`;}
+  else if(tab==="dev"){if(!L.dev){B.innerHTML=`<div class="muted">DEV not required for this lead.</div>`;return;}const d=L.dev;
+    B.innerHTML=`<div class="kv"><div class="k">DEV engineer</div><div class="v">${d.devName}</div><div class="k">Final status</div><div class="v">${statusPill(d.finalStatus)}</div><div class="k">Client permission</div><div class="v">${d.permission}</div><div class="k">Completed</div><div class="v">${d.completedDate||"—"}</div><div class="k">Reschedules</div><div class="v">${d.reschedules}</div><div class="k">Hold during DEV</div><div class="v">${d.holdDays?`${d.holdDays} d (${d.holdStart} → ${d.holdEnd})`:"—"}</div><div class="k">Reason for hold</div><div class="v">${d.holdReason||"—"}</div><div class="k">DEV TAT (gross)</div><div class="v">${fmt(d.grossTat)} days</div><div class="k">DEV TAT (net of hold)</div><div class="v"><b>${fmt(d.devTat)} days</b></div><div class="k">Distance from site</div><div class="v">${d.distKm==null?"—":d.distKm+" km ("+(d.onsite?"on-site":"off-site")+")"}</div></div>
+     <h4 style="font-size:13px;margin:16px 0 8px">Visit attempts</h4><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Scheduled</th><th>Result</th><th>Timestamp</th><th>Lat-Long</th></tr></thead><tbody>${d.blocks.map((b,i)=>`<tr><td>${i+1}</td><td>${b.sched}</td><td>${statusPill(b.connected)}</td><td class="mono" style="font-size:11px">${b.ts||"—"}</td><td class="mono" style="font-size:11px">${b.lat?b.lat+", "+b.lng:"—"}</td></tr>`).join("")}</tbody></table></div>`;}
+  else{const d=L.design;B.innerHTML=`<div class="kv"><div class="k">Designer</div><div class="v">${d.designer}</div><div class="k">Type</div><div class="v">${d.type}</div><div class="k">Status</div><div class="v">${statusPill(d.status)}</div><div class="k">Assigned</div><div class="v">${d.assigned||"—"}</div><div class="k">Completed</div><div class="v">${d.completed||"—"}</div><div class="k">Revisions</div><div class="v">${d.revisions}</div><div class="k">Final capacity</div><div class="v">${d.finalCap} kWp</div><div class="k">Installation</div><div class="v">${d.instType}</div>${d.status==="Cancelled"?`<div class="k">Cancellation remark</div><div class="v" style="color:var(--red)">${d.cancelReason||d.instType}</div>`:""}<div class="k">Design on hold</div><div class="v">${d.holdDays?`${d.holdDays} d (${d.holdStart} → ${d.holdEnd})`:"—"}</div><div class="k">Reason for hold</div><div class="v">${d.holdReason||"—"}</div><div class="k">Design TAT (gross)</div><div class="v">${d.grossTat==null?"—":d.grossTat+" days"}</div><div class="k">Design TAT (net of hold)</div><div class="v"><b>${d.designTat==null?"—":d.designTat+" days"}</b></div><div class="k">SLA target</div><div class="v">${d.target===0?"manual review":d.target+" days"}</div><div class="k">SLA result</div><div class="v">${d.status==="Completed"?statusPill(d.slaState):"—"}</div></div>`;}
 }
 function closeModal(){$("#modal").classList.remove("show");}
 
-/* ---- nav ---- */
-$$(".tab").forEach(t=>t.onclick=()=>{
-  $$(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");
-  const v=t.dataset.v; $$(".view").forEach(x=>x.classList.remove("active"));$("#v-"+v).classList.add("active");
-  if(v==="map"){initMap();setTimeout(()=>map.invalidateSize(),60);}
-});
+/* ====== nav ====== */
+$$(".tab").forEach(t=>t.onclick=()=>{$$(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");const v=t.dataset.v;$$(".view").forEach(x=>x.classList.remove("active"));$("#v-"+v).classList.add("active");if(v==="map"){initMap();setTimeout(()=>map.invalidateSize(),60);}if(v==="calendar")renderCalendar();});
 $("#mapCtl").onclick=e=>{if(e.target.dataset.c){[...e.currentTarget.children].forEach(b=>b.classList.remove("on"));e.target.classList.add("on");mapMode=e.target.dataset.c;drawMarkers();}};
-["devStatusF","devSearch"].forEach(id=>$("#"+id).addEventListener("input",drawDevTbl));
-["dsnStatusF","dsnTypeF"].forEach(id=>$("#"+id).addEventListener("change",drawDsnTbl));
+$("#calCtl").onclick=e=>{if(e.target.dataset.c){[...e.currentTarget.children].forEach(b=>b.classList.remove("on"));e.target.classList.add("on");calMode=e.target.dataset.c;renderCalendar();}};
+$("#projSearch").addEventListener("input",renderProjects);
 
-function renderAll(){renderOverview();renderDev();renderDesign();renderTat();renderTeam();}
-renderAll();
+function renderAll(){renderOverview();renderInsights();renderMonthly();renderDesignerSummary();renderFunnel();renderDev();renderDesign();renderPending();renderTat();renderCohort();renderProjects();renderTeam();if(map)drawMarkers();}
+buildFilters();renderAll();
 
-/* ---- live connect (loads published CSV) ---- */
-function toggleConnect(){
-  $("#connTxt").textContent="Connecting…";
+/* ====== live connect ====== */
+function toggleConnect(){$("#connTxt").textContent="Connecting…";
   Papa.parse(SOURCES.master,{download:true,header:true,complete:res=>{
-    if(!res.data||!res.data.length){fail();return;}
-    // NOTE: mapping the live columns into the lead model goes here.
-    // The column logic (A–K basics, P DEV-required, Q–T assign,
-    // W–AK 3 reschedule blocks, last-filled = effective, distance
-    // from F vs completed lat-long) is implemented in enrich();
-    // wire the parsed rows into that shape, then:
-    // DATA.leads = mappedLeads.map(enrich); renderAll(); if(map)drawMarkers();
-    $("#connBtn").classList.add("live");
-    $("#connTxt").textContent="Live · Master_Sheet ("+res.data.length+" rows)";
+    if(!res.data||!res.data.length){return fail();}
+    // Live column mapping (A–K basics, P DEV-required, Q–T assign, W–AK 3 blocks,
+    // last filled = effective, distance from F vs completed lat-long) plugs into
+    // the same lead shape, then: DATA.leads = mapped.map(enrich); buildFilters(); renderAll();
+    $("#connBtn").classList.add("live");$("#connTxt").textContent="Live · Master ("+res.data.length+" rows)";
   },error:fail});
-  function fail(){$("#connBtn").classList.remove("live");$("#connTxt").textContent="Couldn't reach sheet — check it's published / shared. Using sample.";}
-}
+  function fail(){$("#connBtn").classList.remove("live");$("#connTxt").textContent="Sheet unreachable — publish/share it. Using sample.";}}
 </script>
 </body>
 </html>
